@@ -1,0 +1,410 @@
+[
+  {
+    "id": 1,
+    "name": "Android smartphone 6.7\" 8GB / 256GB",
+    "cat": "phones",
+    "price": 28900,
+    "old": 34500,
+    "stock": 12,
+    "rating": 4.6,
+    "spec": [
+      "6.7-inch AMOLED display",
+      "8GB RAM, 256GB storage",
+      "5000mAh battery, fast charging",
+      "Dual SIM, 1-year warranty"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 2,
+    "name": "Budget smartphone 6.5\" 4GB / 128GB",
+    "cat": "phones",
+    "price": 12500,
+    "old": 0,
+    "stock": 25,
+    "rating": 4.3,
+    "spec": [
+      "6.5-inch HD+ display",
+      "4GB RAM, 128GB storage",
+      "5000mAh battery",
+      "Dual SIM, 1-year warranty"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 3,
+    "name": "Wireless earbuds with noise cancelling",
+    "cat": "electronics",
+    "price": 4200,
+    "old": 5800,
+    "stock": 18,
+    "rating": 4.4,
+    "spec": [
+      "Active noise cancelling",
+      "Up to 24 hours with case",
+      "Touch controls",
+      "Charging case included"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 4,
+    "name": "Laptop 15.6\" Core i5, 16GB, 512GB SSD",
+    "cat": "computers",
+    "price": 68000,
+    "old": 74500,
+    "stock": 6,
+    "rating": 4.7,
+    "spec": [
+      "15.6-inch Full HD display",
+      "Core i5, 16GB RAM",
+      "512GB SSD",
+      "Windows 11, 1-year warranty"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 5,
+    "name": "Student laptop 14\" 8GB / 256GB",
+    "cat": "computers",
+    "price": 38500,
+    "old": 0,
+    "stock": 14,
+    "rating": 4.4,
+    "spec": [
+      "14-inch Full HD display",
+      "8GB RAM, 256GB SSD",
+      "Lightweight, 8-hour battery",
+      "1-year warranty"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 6,
+    "name": "Tablet 10.4\" 4GB / 64GB",
+    "cat": "computers",
+    "price": 19800,
+    "old": 23000,
+    "stock": 9,
+    "rating": 4.3,
+    "spec": [
+      "10.4-inch display",
+      "4GB RAM, 64GB storage",
+      "Wi-Fi and SIM slot",
+      "Cover included"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 7,
+    "name": "Laptop backpack, water-resistant",
+    "cat": "computers",
+    "price": 2400,
+    "old": 0,
+    "stock": 40,
+    "rating": 4.5,
+    "spec": [
+      "Fits up to 15.6-inch laptops",
+      "Water-resistant fabric",
+      "Padded back and straps",
+      "USB charging pass-through"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 8,
+    "name": "43\" smart LED TV",
+    "cat": "electronics",
+    "price": 28500,
+    "old": 33900,
+    "stock": 8,
+    "rating": 4.5,
+    "spec": [
+      "43-inch Full HD",
+      "Built-in apps, Wi-Fi",
+      "3 HDMI, 2 USB ports",
+      "Wall bracket included"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 9,
+    "name": "55\" 4K smart TV",
+    "cat": "electronics",
+    "price": 52000,
+    "old": 0,
+    "stock": 5,
+    "rating": 4.6,
+    "spec": [
+      "55-inch 4K UHD",
+      "HDR, built-in apps",
+      "Voice remote",
+      "1-year warranty"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 10,
+    "name": "Soundbar 2.1 with Bluetooth",
+    "cat": "electronics",
+    "price": 11500,
+    "old": 0,
+    "stock": 3,
+    "rating": 4.4,
+    "spec": [
+      "2.1 channel with subwoofer",
+      "Bluetooth, HDMI ARC, USB",
+      "120W peak output",
+      "Remote included"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 11,
+    "name": "Power bank 20,000mAh",
+    "cat": "electronics",
+    "price": 2900,
+    "old": 3600,
+    "stock": 35,
+    "rating": 4.5,
+    "spec": [
+      "20,000mAh capacity",
+      "Fast charging, 2 outputs",
+      "Digital battery display",
+      "Charges a phone 4 to 5 times"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 12,
+    "name": "Front-load washing machine 8kg",
+    "cat": "appliances",
+    "price": 62500,
+    "old": 0,
+    "stock": 4,
+    "rating": 4.6,
+    "spec": [
+      "8kg capacity",
+      "15 wash programs",
+      "Energy-saving motor",
+      "2-year warranty"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 13,
+    "name": "Double-door fridge 250L",
+    "cat": "appliances",
+    "price": 54900,
+    "old": 59000,
+    "stock": 7,
+    "rating": 4.5,
+    "spec": [
+      "250 litres, frost-free",
+      "Adjustable shelves",
+      "Low-noise compressor",
+      "2-year warranty"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 14,
+    "name": "Microwave oven 25L",
+    "cat": "appliances",
+    "price": 11800,
+    "old": 0,
+    "stock": 15,
+    "rating": 4.3,
+    "spec": [
+      "25 litres, 900W",
+      "Grill function",
+      "Digital controls",
+      "1-year warranty"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 15,
+    "name": "Electric kettle 1.8L",
+    "cat": "appliances",
+    "price": 1650,
+    "old": 0,
+    "stock": 60,
+    "rating": 4.4,
+    "spec": [
+      "1.8 litre capacity",
+      "Auto shut-off",
+      "Boil-dry protection",
+      "Stainless steel body"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 16,
+    "name": "Air fryer 5L",
+    "cat": "appliances",
+    "price": 7900,
+    "old": 9500,
+    "stock": 16,
+    "rating": 4.7,
+    "spec": [
+      "5 litre basket",
+      "Temperature control to 200 degrees",
+      "Timer and auto shut-off",
+      "Dishwasher-safe basket"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 17,
+    "name": "Non-stick cookware set, 12 pieces",
+    "cat": "home",
+    "price": 6800,
+    "old": 0,
+    "stock": 20,
+    "rating": 4.4,
+    "spec": [
+      "12 pieces with lids",
+      "Non-stick coating",
+      "Works on gas and electric",
+      "Heat-resistant handles"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 18,
+    "name": "Cotton bedding set, queen size",
+    "cat": "home",
+    "price": 4500,
+    "old": 0,
+    "stock": 22,
+    "rating": 4.5,
+    "spec": [
+      "Duvet cover, sheet, 2 pillowcases",
+      "100% cotton",
+      "Machine washable",
+      "Several colours"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 19,
+    "name": "Rechargeable LED lantern",
+    "cat": "home",
+    "price": 1350,
+    "old": 0,
+    "stock": 45,
+    "rating": 4.2,
+    "spec": [
+      "USB rechargeable",
+      "Up to 12 hours light",
+      "3 brightness modes",
+      "Useful during power cuts"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 20,
+    "name": "Storage organiser set, 6 pieces",
+    "cat": "home",
+    "price": 1900,
+    "old": 0,
+    "stock": 30,
+    "rating": 4.1,
+    "spec": [
+      "6 stackable boxes",
+      "Clear lids",
+      "Fits shelves and wardrobes",
+      "Easy to clean"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 21,
+    "name": "Men's cotton polo shirt",
+    "cat": "clothing",
+    "price": 1200,
+    "old": 0,
+    "stock": 80,
+    "rating": 4.3,
+    "spec": [
+      "100% cotton",
+      "Sizes S to XXL",
+      "Machine washable",
+      "Navy, black, white, grey"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 22,
+    "name": "Women's casual dress",
+    "cat": "clothing",
+    "price": 2300,
+    "old": 2900,
+    "stock": 24,
+    "rating": 4.5,
+    "spec": [
+      "Soft, breathable fabric",
+      "Sizes S to XL",
+      "Knee length",
+      "Several prints"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 23,
+    "name": "Unisex fleece hoodie",
+    "cat": "clothing",
+    "price": 2600,
+    "old": 0,
+    "stock": 3,
+    "rating": 4.6,
+    "spec": [
+      "Brushed fleece lining",
+      "Sizes S to XXL",
+      "Front pocket",
+      "Machine washable"
+    ],
+    "hidden": false,
+    "image": ""
+  },
+  {
+    "id": 24,
+    "name": "Running sneakers",
+    "cat": "clothing",
+    "price": 4400,
+    "old": 5500,
+    "stock": 17,
+    "rating": 4.4,
+    "spec": [
+      "Cushioned sole",
+      "Sizes 38 to 45",
+      "Breathable mesh upper",
+      "Non-slip grip"
+    ],
+    "hidden": false,
+    "image": ""
+  }
+]

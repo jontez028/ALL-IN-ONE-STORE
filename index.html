@@ -554,7 +554,8 @@ function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}ca
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function icon(cat,cls){return '<svg class="'+(cls||'ic')+'" viewBox="0 0 24 24" aria-hidden="true">'+CAT[cat].ic+'</svg>'}
 function byId(id){return P.filter(function(p){return p.id===id})[0]}
-function art(p){return p.imageId?'<img class="pimg" alt="" src="/_blob/'+p.imageId+'">':icon(p.cat)}
+function psrc(p){return p.imageId?'/_blob/'+p.imageId:(p.image||'')}
+function art(p){var u=psrc(p);return u?'<img class="pimg" loading="lazy" alt="" src="'+u+'">':icon(p.cat)}
 var toastT;function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on')},2400)}
 
 /* state */
@@ -712,7 +713,7 @@ function cartView(body,foot){
   }
   if(ui.step==='cart'){
     body.innerHTML=items.map(function(i){var c=CAT[i.p.cat];
-      return '<div class="line" style="--c:'+c.c+'"><div class="th">'+(i.p.imageId?'<img alt="" src="/_blob/'+i.p.imageId+'">':'<svg viewBox="0 0 24 24">'+c.ic+'</svg>')+'</div><div><b>'+esc(i.p.name)+'</b><small class="num">'+kes(i.p.price)+'</small><br><div class="qty"><button data-dec="'+i.p.id+'" aria-label="Fewer">&minus;</button><span class="num">'+i.q+'</span><button data-inc="'+i.p.id+'" aria-label="More">+</button></div> <button class="rm" data-rm="'+i.p.id+'">Remove</button></div><b class="num">'+kes(i.p.price*i.q)+'</b></div>'}).join('')+'<div style="margin-top:16px">'+sumHtml()+'</div>';
+      return '<div class="line" style="--c:'+c.c+'"><div class="th">'+(psrc(i.p)?'<img alt="" src="'+psrc(i.p)+'">':'<svg viewBox="0 0 24 24">'+c.ic+'</svg>')+'</div><div><b>'+esc(i.p.name)+'</b><small class="num">'+kes(i.p.price)+'</small><br><div class="qty"><button data-dec="'+i.p.id+'" aria-label="Fewer">&minus;</button><span class="num">'+i.q+'</span><button data-inc="'+i.p.id+'" aria-label="More">+</button></div> <button class="rm" data-rm="'+i.p.id+'">Remove</button></div><b class="num">'+kes(i.p.price*i.q)+'</b></div>'}).join('')+'<div style="margin-top:16px">'+sumHtml()+'</div>';
     foot.hidden=false;foot.innerHTML='<button class="btn primary" data-step="delivery">Checkout</button>';
     return;
   }
@@ -820,7 +821,7 @@ function helpView(body){
 function openView(id){
   var p=byId(id),c=CAT[p.cat],pct=p.old?Math.round((p.old-p.price)/p.old*100):0;
   var m=$('#modal');
-  m.innerHTML='<div class="m-box" style="--c:'+c.c+'"><div class="m-art">'+(p.imageId?'<img class="pimg" alt="" src="/_blob/'+p.imageId+'">':icon(p.cat,'ic'))+'</div><div class="m-info"><div style="display:flex;justify-content:space-between;align-items:center"><span class="cat">'+esc(c.name)+'</span><button class="x" data-closemodal="1" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div><h2 style="font-size:22px">'+esc(p.name)+'</h2><span class="rate"><b>&#9733;</b> '+p.rating.toFixed(1)+' · '+(p.stock<=5?'Only '+p.stock+' left':'In stock')+'</span>'+
+  m.innerHTML='<div class="m-box" style="--c:'+c.c+'"><div class="m-art">'+(psrc(p)?'<img class="pimg" alt="" src="'+psrc(p)+'">':icon(p.cat,'ic'))+'</div><div class="m-info"><div style="display:flex;justify-content:space-between;align-items:center"><span class="cat">'+esc(c.name)+'</span><button class="x" data-closemodal="1" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div><h2 style="font-size:22px">'+esc(p.name)+'</h2><span class="rate"><b>&#9733;</b> '+p.rating.toFixed(1)+' · '+(p.stock<=5?'Only '+p.stock+' left':'In stock')+'</span>'+
    '<div class="price"><strong class="num" style="font-size:26px">'+kes(p.price)+'</strong>'+(p.old?'<s class="num">'+kes(p.old)+'</s><span class="pill" style="background:var(--deal-soft);color:var(--deal)">Save '+pct+'%</span>':'')+'</div>'+
    '<ul>'+p.spec.map(function(s){return '<li>'+esc(s)+'</li>'}).join('')+'</ul>'+
    '<div class="m-acts"><div class="qty"><button data-mdec="1" aria-label="Fewer">&minus;</button><span class="num" id="mq">1</span><button data-minc="1" aria-label="More">+</button></div><button class="btn primary" data-madd="'+p.id+'" style="flex:1">Add to cart</button></div></div></div>';
@@ -1144,10 +1145,20 @@ $('#aSearch').addEventListener('input',function(e){A.q=e.target.value;drawAdmin(
 $('#aCat').innerHTML='<option value="all">All categories</option>'+CATS.map(function(c){return '<option value="'+c.id+'">'+esc(c.name)+'</option>'}).join('');
 $('#aCat').addEventListener('change',function(e){A.cat=e.target.value;drawAdmin()});
 window.addEventListener('hashchange',route);
+/* static catalogue: products.json beside the page, used when no database is connected */
+function loadStatic(){
+  if(DB)return;
+  fetch('products.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():null}).then(function(l){
+    if(!Array.isArray(l)||!l.length||DB)return;
+    var ok=function(v){return typeof v==='string'&&/^img\/[A-Za-z0-9._-]+\.(jpe?g|png|webp)$/.test(v)};
+    P=l.map(function(x){return {id:+x.id,name:String(x.name||''),cat:CAT[x.cat]?x.cat:'home',price:+x.price||0,old:+x.old||0,stock:+x.stock||0,rating:+x.rating||4.5,spec:Array.isArray(x.spec)?x.spec.map(String):[],hidden:!!x.hidden,imageId:'',image:ok(x.image)?x.image:''}}).filter(function(p){return p.id&&p.name&&p.price>0});
+    drawGrid();drawDeals();badges();
+  }).catch(function(){});
+}
 function init2(){
-  if(!(window.claude&&window.claude.use)){accessKnown=true;return}
+  if(!(window.claude&&window.claude.use)){accessKnown=true;loadStatic();return}
   Promise.all([claude.use('db').catch(function(){return null}),claude.use('user').catch(function(){return null}),claude.use('assets').catch(function(){return null})]).then(function(r){
-    DB=r[0];USER=r[1];ASSETS=r[2];
+    DB=r[0];USER=r[1];ASSETS=r[2];if(!DB)loadStatic();
     var done=function(v){isAdmin=!!v;accessKnown=true;route();autoAdmin()};
     if(USER)USER.canEdit().then(done,function(){done(false)});else done(false);
     if(DB)DB.collection('products').onSnapshot(function(s){
