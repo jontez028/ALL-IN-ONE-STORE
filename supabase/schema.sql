@@ -26,6 +26,7 @@ end $$;
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created after insert on auth.users
 for each row execute function public.handle_new_user();
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
 
 create or replace function public.is_admin() returns boolean
 language sql security definer stable set search_path = public as $$
@@ -85,7 +86,6 @@ revoke delete on public.orders from anon, authenticated;
 
 -- product photos
 insert into storage.buckets (id, name, public) values ('products', 'products', true) on conflict (id) do nothing;
-create policy "product photos are public" on storage.objects for select using (bucket_id = 'products');
 create policy "admin adds product photos" on storage.objects for insert to authenticated with check (bucket_id = 'products' and public.is_admin());
 create policy "admin edits product photos" on storage.objects for update to authenticated using (bucket_id = 'products' and public.is_admin());
 create policy "admin removes product photos" on storage.objects for delete to authenticated using (bucket_id = 'products' and public.is_admin());
