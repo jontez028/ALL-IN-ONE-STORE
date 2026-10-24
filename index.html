@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="All In One Store: phones, laptops, appliances, clothes and household items delivered across Kenya.">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
 <title>All In One Store</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
@@ -387,6 +389,7 @@ button,a{-webkit-tap-highlight-color:transparent}
   .bnav .badge{position:absolute;top:4px;left:56%;min-width:18px;height:18px;font-size:11px;padding:0 5px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+.ao{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--surface)}.ao-h{display:flex;justify-content:space-between;gap:10px;font-size:18px;margin-bottom:6px}.ao-b{font-size:15px;color:var(--ink);margin-bottom:10px;word-break:break-word}.ao-s{display:flex;gap:10px;align-items:center;font-weight:700}.ao-s select{flex:1;min-width:0}
 </style>
 </head>
 <body>
@@ -464,7 +467,7 @@ button,a{-webkit-tap-highlight-color:transparent}
     <div class="a-acts"><button class="btn" data-a="store">View store</button><button class="btn" data-a="signout">Sign out</button><span id="aTools" class="a-acts" hidden><button class="btn" data-a="photos">Add photos</button><button class="btn" data-a="bulk">Change prices</button><button class="btn primary" data-a="new">Add product</button></span></div>
   </div>
   <div id="aGate"></div>
-  <div id="aMain" hidden>
+  <div id="aMain" hidden><div class="chips" id="aTabs" style="margin-bottom:12px"><button class="chip" data-atab="products" aria-pressed="true">Products</button><button class="chip" data-atab="orders" aria-pressed="false">Orders</button></div><div id="aOrders" hidden></div>
     <div class="a-stats" id="aStats"></div>
     <div class="a-tool"><input id="aSearch" type="text" placeholder="Search products" aria-label="Search products" autocomplete="off"><select id="aCat" aria-label="Filter by category"></select></div>
     <div class="a-wrap"><table class="a-tab"><thead><tr><th>Product</th><th>Category</th><th>Price (KES)</th><th>Was price</th><th>Stock</th><th>Live</th><th></th></tr></thead><tbody id="aBody"></tbody></table></div>
@@ -554,7 +557,8 @@ function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}ca
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function icon(cat,cls){return '<svg class="'+(cls||'ic')+'" viewBox="0 0 24 24" aria-hidden="true">'+CAT[cat].ic+'</svg>'}
 function byId(id){return P.filter(function(p){return p.id===id})[0]}
-function psrc(p){return p.imageId?'/_blob/'+p.imageId:(p.image||'')}
+function blobUrl(id){return /^https?:/.test(id)?id:'/_blob/'+id}
+function psrc(p){var u=p.image||'';if(!/^[^"'<>\s]+$/.test(u))return '';if(window.AIO&&AIO.url&&u.indexOf(AIO.url+'/storage/v1/object/public/')===0)return u;return /^img\/[A-Za-z0-9._-]+\.(jpe?g|png|webp)$/.test(u)?u:''}
 function art(p){var u=psrc(p);return u?'<img class="pimg" loading="lazy" alt="" src="'+u+'">':icon(p.cat)}
 var toastT;function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on')},2400)}
 
@@ -777,14 +781,16 @@ function ordersView(body){
   var list=myOrders().reverse();
   if(!ui.sel||!myOrders().some(function(o){return o.id===ui.sel}))ui.sel=list[0]&&list[0].id;
   var h='<form class="trk" id="trkForm"><input type="text" id="trkIn" placeholder="Enter order number, e.g. AIO-10482" aria-label="Order number" autocomplete="off"><button class="btn primary" type="submit">Track</button></form>'+(ui.trkErr?'<div class="err" style="color:var(--danger);font-size:13px;margin:-8px 0 12px">'+ui.trkErr+'</div>':'');
-  h+=(me()?'':'<div class="note">Sign in to see the orders you place. The sample order below shows how tracking looks.</div><button class="btn primary" style="width:100%;margin-bottom:14px" data-open="account">Sign in or create an account</button>')+'<div class="note">Sample order AIO-10482 shows how tracking looks. Your own orders appear with it.</div>';
+  var hasDemo=orders.some(function(o){return o.demo});
+  h+=(me()?'':'<div class="note">Sign in to see the orders you place.'+(hasDemo?' The sample order below shows how tracking looks.':'')+'</div><button class="btn primary" style="width:100%;margin-bottom:14px" data-open="account">Sign in or create an account</button>')+(hasDemo?'<div class="note">Sample order AIO-10482 shows how tracking looks. Your own orders appear with it.</div>':'');
+  if(me()&&!list.length)h+='<div class="note">You have no orders yet. Orders you place appear here.</div>';
   h+=list.map(function(o){var s=stageOf(o);return '<button class="ocard" data-sel="'+o.id+'" aria-current="'+(o.id===ui.sel)+'"><span><b class="num">'+o.id+'</b><br><small style="color:var(--muted)">'+o.items.reduce(function(a,i){return a+i.q},0)+' items · '+kes(o.total)+'</small></span><span class="pill'+(s===4?' go':'')+'">'+STAGES[s][0]+'</span></button>'}).join('');
   var o=myOrders().filter(function(x){return x.id===ui.sel})[0];
   if(o){
     var s=stageOf(o);
-    h+='<h3 style="font-size:17px;margin:18px 0 4px">Order '+o.id+'</h3><div style="color:var(--muted);font-size:14px">'+o.items.map(function(i){var p=byId(i.id);return i.q+' x '+esc(p?p.name:'Item')}).join('<br>')+'<br>Delivering to '+esc(o.county)+' · '+esc(o.pay)+'</div>';
-    h+='<ol class="tl">'+STAGES.map(function(st,i){var cls=i<s?'done':(i===s?(s===4?'done':'now'):'');return '<li class="'+cls+'"><i></i><b>'+st[0]+'</b><small>'+(i<=s?timeLabel(o,i)+' · '+st[1]:st[1])+'</small></li>'}).join('')+'</ol>';
-    if(o.fixed==null&&s<4)h+='<div class="rate">Demo timing: each step advances every 90 seconds.</div>';
+    h+='<h3 style="font-size:17px;margin:18px 0 4px">Order '+o.id+'</h3><div style="color:var(--muted);font-size:14px">'+o.items.map(function(i){var p=byId(i.id);return i.q+' x '+esc(i.name||(p?p.name:'Item'))}).join('<br>')+'<br>Delivering to '+esc(o.county)+' · '+esc(o.pay)+'</div>';
+    h+='<ol class="tl">'+STAGES.map(function(st,i){var cls=i<s?'done':(i===s?(s===4?'done':'now'):'');return '<li class="'+cls+'"><i></i><b>'+st[0]+'</b><small>'+(i<=s?(timeLabel(o,i)?timeLabel(o,i)+' · ':'')+st[1]:st[1])+'</small></li>'}).join('')+'</ol>';
+    if(o.fixed==null&&o.stage==null&&s<4)h+='<div class="rate">Demo timing: each step advances every 90 seconds.</div>';
     h+='<a class="btn" style="width:100%;margin-top:12px" target="_blank" rel="noopener" href="'+wa('Hello, I would like an update on order '+o.id)+'">Ask about this order on WhatsApp</a>';
   }
   body.innerHTML=h;
@@ -947,7 +953,7 @@ function accountView(body){
     body.innerHTML='<div class="opt" style="cursor:default;display:block"><b style="font-size:18px">'+esc(a.name)+'</b><span class="num">'+esc(a.phone)+(a.email?' · '+esc(a.email):'')+'</span></div>'+
      '<h3 style="font-size:17px;margin:16px 0 10px">Saved delivery details</h3><form id="addrForm"><div class="field"><label for="ad-county">County</label><select id="ad-county">'+Object.keys(COUNTIES).map(function(c){return '<option'+(c===(a.county||'Nairobi')?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div>'+
      '<div class="field"><label for="ad-address">Town, estate and landmark</label><textarea id="ad-address" rows="2" placeholder="e.g. Chuka town, near the main stage">'+esc(a.address||'')+'</textarea></div><button class="btn primary" type="submit" style="width:100%">Save details</button></form>'+
-     '<button class="btn" style="width:100%;margin-top:10px" data-tab="orders">View my orders</button><button class="btn" style="width:100%;margin-top:10px" data-signout="1">Sign out</button>'+
+     (isAdmin&&DB?'<button class="btn primary" style="width:100%;margin-top:10px" data-adminopen="1">Open admin panel</button>':'')+'<button class="btn" style="width:100%;margin-top:10px" data-tab="orders">View my orders</button><button class="btn" style="width:100%;margin-top:10px" data-signout="1">Sign out</button>'+
      '<div class="note" style="margin:16px 0 0">Accounts are kept on this device for now. Accounts that work on every phone arrive with the store backend.</div>';
     return;
   }
@@ -971,7 +977,7 @@ function mapDoc(d){var x=d.data()||{};return {id:+x.id,name:String(x.name||''),c
 function docOf(p){return {id:p.id,name:p.name,cat:p.cat,price:p.price,old:p.old||0,stock:p.stock,rating:p.rating||4.5,spec:p.spec||[],hidden:!!p.hidden,imageId:p.imageId||''}}
 function pref(id){return DB.collection('products').doc('p'+id)}
 function errMsg(e){var c=e&&e.code;if(c==='invalid_argument'||c==='not_granted')return 'Only the store owner or an editor can change products.';if(c==='quota_exceeded')return 'The catalogue is full. Delete some products first.';return 'Could not save. Check your connection and try again.'}
-function artAdm(p){return p.imageId?'<img alt="" src="/_blob/'+p.imageId+'">':'<svg viewBox="0 0 24 24">'+CAT[p.cat].ic+'</svg>'}
+function artAdm(p){return psrc(p)?'<img alt="" src="'+psrc(p)+'">':'<svg viewBox="0 0 24 24">'+CAT[p.cat].ic+'</svg>'}
 var ADM=false;
 function adminOn(){return ADM}
 function adminOk(){return accessKnown&&isAdmin&&!!DB&&!!me()}
@@ -1016,7 +1022,7 @@ function saveField(id,field,el){
 function nextId(){return P.reduce(function(m,p){return Math.max(m,p.id)},0)+1}
 function closeA(){$('#aModal').classList.remove('on');AF=null}
 function openForm(p){
-  AF={id:p?p.id:null,imageId:p?p.imageId:'',rating:p?p.rating:4.5};
+  AF={id:p?p.id:null,imageId:p?(p.imageId||p.image||''):'',rating:p?p.rating:4.5};
   var c=p?CAT[p.cat]:CATS[0];
   $('#aModal').innerHTML='<div class="m-box form"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="font-size:24px">'+(p?'Edit product':'Add product')+'</h2><button class="x" data-a="close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>'+
    '<form id="aForm" novalidate>'+
@@ -1026,7 +1032,7 @@ function openForm(p){
    '<div class="row2"><div class="field"><label for="a-old">Was price (optional)</label><input id="a-old" type="number" min="0" step="10" value="'+(p&&p.old?p.old:'')+'" placeholder="Shows a discount"></div>'+
    '<div class="field"><label for="a-stock">Stock</label><input id="a-stock" type="number" min="0" step="1" value="'+(p?p.stock:'')+'"></div></div>'+
    '<div class="field"><label for="a-spec">Details (one per line)</label><textarea id="a-spec" rows="4" placeholder="6.7-inch display&#10;8GB RAM, 256GB storage&#10;1-year warranty">'+esc(p?p.spec.join('\n'):'')+'</textarea></div>'+
-   '<div class="field"><label>Photo</label>'+(ASSETS?'<div class="up"><span class="a-th big" id="aPrev" style="--c:'+c.c+'">'+(AF.imageId?'<img alt="" src="/_blob/'+AF.imageId+'">':'<svg viewBox="0 0 24 24">'+c.ic+'</svg>')+'</span><div><input type="file" id="aFile" accept="image/*" style="height:auto;border:0;padding:0"><div style="margin-top:6px"><button type="button" class="btn sm" data-a="rmimg">Remove photo</button></div></div></div>':'<div class="note" style="margin:0">Photo upload is available to editors of this page.</div>')+'</div>'+
+   '<div class="field"><label>Photo</label>'+(ASSETS?'<div class="up"><span class="a-th big" id="aPrev" style="--c:'+c.c+'">'+(AF.imageId?'<img alt="" src="'+blobUrl(AF.imageId)+'">':'<svg viewBox="0 0 24 24">'+c.ic+'</svg>')+'</span><div><input type="file" id="aFile" accept="image/*" style="height:auto;border:0;padding:0"><div style="margin-top:6px"><button type="button" class="btn sm" data-a="rmimg">Remove photo</button></div></div></div>':'<div class="note" style="margin:0">Photo upload is available to editors of this page.</div>')+'</div>'+
    '<label class="chk"><input type="checkbox" id="a-vis"'+(p&&p.hidden?'':' checked')+'> Show on the store</label>'+
    '<div class="form-err" id="aErr" role="alert"></div>'+
    '<div class="row2"><button type="button" class="btn" data-a="close">Cancel</button><button type="submit" class="btn primary" id="aSave">'+(p?'Save changes':'Add product')+'</button></div></form></div>';
@@ -1084,7 +1090,7 @@ function guessProduct(fname){
 function photoRows(){
   $('#pList').innerHTML=PH.map(function(it,i){
     return '<div class="line" style="grid-template-columns:76px 1fr;align-items:start"><span class="a-th big" style="--c:#0b2a6b"><img alt="" src="'+it.url+'"></span><div><small style="color:var(--muted);word-break:break-all">'+esc(it.name)+'</small>'+
-     '<select data-pi="'+i+'" aria-label="Product for '+esc(it.name)+'" style="width:100%;margin-top:6px"><option value="0">Choose a product</option>'+P.map(function(p){return '<option value="'+p.id+'"'+(it.sel===p.id?' selected':'')+'>'+esc(p.name)+(p.imageId?' (has photo)':'')+'</option>'}).join('')+'</select></div></div>';
+     '<select data-pi="'+i+'" aria-label="Product for '+esc(it.name)+'" style="width:100%;margin-top:6px"><option value="0">Choose a product</option>'+P.map(function(p){return '<option value="'+p.id+'"'+(it.sel===p.id?' selected':'')+'>'+esc(p.name)+(psrc(p)?' (has photo)':'')+'</option>'}).join('')+'</select></div></div>';
   }).join('');
   var n=PH.filter(function(x){return x.sel}).length,b=$('#pSave');b.disabled=!n;b.textContent=n?'Save '+n+(n===1?' photo':' photos'):'Save photos';
 }
@@ -1175,7 +1181,140 @@ var lastY=0;window.addEventListener('scroll',function(){var y=window.scrollY;$('
 $('#footPhone').textContent=STORE_PHONE_DISPLAY;
 drawChips();drawGrid();drawDeals();badges();tick();setInterval(tick,1000);
 setInterval(function(){if($('#panel').classList.contains('on')&&ui.tab==='orders'&&!document.activeElement.matches('input'))drawPanel()},15000);
-acctInit();initCar();init2();route();
+/* backend: Supabase accounts, products, orders and the owner admin */
+var SBON=!!(window.AIO&&window.AIO.url&&window.AIO.key&&window.supabase&&window.supabase.createClient);
+var sb=null,prof=null,sbInit=null;
+if(SBON){
+  sb=window.supabase.createClient(AIO.url,AIO.key,{auth:{persistSession:true,autoRefreshToken:true}});
+  accts=[];sess=null;orders=[];
+  var synth=function(ph){return normPhone(ph)+'@phone.aio-store.app'};
+  var tmr=null;
+  var schedule=function(){clearTimeout(tmr);tmr=setTimeout(function(){loadProducts()},500)};
+  var chk=function(r){if(r.error){throw {code:(r.error.code==='42501'||r.error.code==='PGRST301')?'invalid_argument':'unavailable',message:r.error.message}}schedule()};
+  var mapRow=function(r){return {id:+r.id,name:r.name,cat:CAT[r.cat]?r.cat:'home',price:+r.price,old:+r.old||0,stock:+r.stock||0,rating:+r.rating||4.5,spec:Array.isArray(r.spec)?r.spec:[],hidden:!!r.hidden,imageId:'',image:r.image||''}};
+  var loadProducts=function(){return sb.from('products').select('*').order('id').then(function(r){
+    if(r.error||!r.data)return;
+    P=r.data.map(mapRow).filter(function(p){return p.id&&p.name});
+    drawGrid();drawDeals();badges();
+    if(adminOn()&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#aBody')))drawAdmin();
+    if($('#panel').classList.contains('on')&&ui.tab==='cart'&&ui.step==='cart')drawPanel();
+  })};
+  var toRow=function(u){var o={};['name','cat','price','old','stock','rating','spec','hidden'].forEach(function(k){if(u[k]!==undefined)o[k]=u[k]});if(u.imageId!==undefined)o.image=u.imageId;if(u.image!==undefined)o.image=u.image;return o};
+  pref=function(id){return {
+    update:function(u){return sb.from('products').update(toRow(u)).eq('id',id).select().then(function(r){if(!r.error&&(!r.data||!r.data.length))throw {code:'invalid_argument'};chk(r)})},
+    set:function(d){var row=toRow(d);row.id=id;return sb.from('products').upsert(row).then(chk)},
+    del:null,
+    delete:function(){return sb.from('products').delete().eq('id',id).then(chk)}
+  }};
+  var assetsShim={upload:function(blob,opt){
+    var type=(opt&&opt.type)||blob.type||'image/jpeg',ext=type==='image/png'?'png':(type==='image/webp'?'webp':'jpg');
+    var path='p/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
+    return sb.storage.from('products').upload(path,blob,{contentType:type,upsert:false}).then(function(r){
+      if(r.error)throw {code:'upstream_error',message:r.error.message};
+      var u=sb.storage.from('products').getPublicUrl(path).data.publicUrl;return {id:u,url:u};
+    });
+  }};
+  persist=function(){save('aio_cart',cart);save('aio_wish',wish)};
+  me=function(){return prof&&sess?prof:null};
+  var loadProfile=function(user){return sb.from('profiles').select('*').eq('id',user.id).single().then(function(r){
+    if(r.error||!r.data){prof=null;sess=null;isAdmin=false;DB=null;ASSETS=null;return}
+    var d=r.data;prof={id:d.id,name:d.name||'',phone:d.phone||'',email:d.email||'',county:d.county||'Nairobi',address:d.address||''};
+    sess=d.id;isAdmin=!!d.is_admin;
+    if(isAdmin){DB={sb:1};ASSETS=assetsShim;loadProducts()}else{DB=null;ASSETS=null}
+    fillFromAccount(prof);
+  })};
+  var mapOrder=function(r){return {id:r.id,owner:r.user_id,created:Date.parse(r.created_at),items:r.items||[],fee:r.fee,county:r.county,address:r.address,pay:r.pay,total:r.total,stage:r.stage,times:r.times||{},cname:r.contact_name,cphone:r.contact_phone}};
+  var loadMyOrders=function(){if(!sess){orders=[];return Promise.resolve()}
+    return sb.from('orders').select('*').eq('user_id',sess).order('created_at',{ascending:false}).then(function(r){orders=(r.data||[]).map(mapOrder)})};
+  stageOf=function(o){return o.stage!=null?o.stage:(o.fixed!=null?o.fixed:Math.min(4,Math.floor((Date.now()-o.created)/STAGE_MS)))};
+  timeLabel=function(o,i){var t=o.times&&o.times[i];return t?new Date(t).toLocaleString('en-KE',{weekday:'short',hour:'2-digit',minute:'2-digit'}):''};
+  var afterLogin=function(user){return loadProfile(user).then(loadMyOrders).then(function(){if(!prof)throw 0;return loadAdminOrders()}).then(function(){startSession(prof)})};
+  authSubmit=function(){
+    var err=function(m){ui.authErr=m;drawPanel()};
+    var ph=$('#u-phone').value.trim(),pw=$('#u-pw').value;
+    if(ui.authMode==='signup'){
+      var nm=$('#u-name').value.trim(),em=$('#u-email').value.trim(),pw2=$('#u-pw2').value;
+      if(nm.length<2)return err('Enter your full name.');
+      if(!validPhone(ph))return err('Enter a valid Kenyan phone number, like 0712 345 678.');
+      if(em&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return err('That email address does not look right.');
+      if(pw.length<8)return err('Use a password with at least 8 characters.');
+      if(pw!==pw2)return err('The two passwords do not match.');
+      sb.auth.signUp({email:synth(ph),password:pw,options:{data:{name:nm,phone:ph,email:em}}}).then(function(r){
+        if(r.error)return err(/already|registered/i.test(r.error.message||'')?'An account with this phone number already exists. Sign in instead.':'Could not create the account. Try again.');
+        if(!r.data||!r.data.session)return err('The account was created but sign-in is not switched on yet. Please tell the store.');
+        return afterLogin(r.data.user);
+      }).catch(function(){err('Could not create the account. Try again.')});
+    }else{
+      if(Date.now()<ui.lock)return err('Too many tries. Wait a moment and try again.');
+      if(!validPhone(ph))return err('Enter a valid Kenyan phone number.');
+      sb.auth.signInWithPassword({email:synth(ph),password:pw}).then(function(r){
+        if(r.error){ui.fails++;if(ui.fails>=5){ui.lock=Date.now()+30000;ui.fails=0}return err('Phone number or password is not right.')}
+        return afterLogin(r.data.user);
+      }).catch(function(){err('Could not sign in. Try again.')});
+    }
+  };
+  saveAddr=function(){if(!prof)return;var c=$('#ad-county').value,a=$('#ad-address').value.trim();
+    sb.from('profiles').update({county:c,address:a}).eq('id',prof.id).then(function(r){if(r.error)return toast('Could not save. Try again.');prof.county=c;prof.address=a;fillFromAccount(prof);toast('Delivery details saved')})};
+  finishOrder=function(){
+    var F=ui.form,items=cartItems(),fe=fee(),sub=subtotal();
+    var o={id:'AIO-'+(10000+Math.floor(Math.random()*89999)),user_id:sess,contact_name:F.name,contact_phone:F.phone,
+      items:items.map(function(i){return {id:i.p.id,q:i.q,name:i.p.name,price:i.p.price}}),fee:fe,county:F.county,address:F.address,
+      pay:F.pay==='mpesa'?'M-Pesa (demo)':'Pay on delivery',total:sub+fe,stage:0,times:{0:new Date().toISOString()}};
+    sb.from('orders').insert(o).then(function(r){
+      if(r.error){ui.paying=false;ui.step='pay';drawPanel();toast('Could not place the order. Try again.');return}
+      cart={};persist();ui.last={id:o.id,total:o.total,pay:o.pay};ui.step='done';ui.sel=o.id;badges();
+      return loadMyOrders().then(function(){drawPanel()});
+    });
+  };
+  /* sign out */
+  document.addEventListener('click',function(e){
+    if(e.target.closest('[data-signout],[data-a="signout"]')){sb.auth.signOut().then(function(){prof=null;sess=null;isAdmin=false;DB=null;ASSETS=null;orders=[];AO=[];ADM=false;try{sessionStorage.removeItem('aio_adm')}catch(x){}loadProducts();refreshAcct();route();drawPanel()})}
+    if(e.target.closest('[data-adminopen]')){adminRedirect()}
+  });
+  /* admin orders */
+  var AO=[];
+  var loadAdminOrders=function(){if(!isAdmin)return Promise.resolve();
+    return sb.from('orders').select('*').order('created_at',{ascending:false}).limit(200).then(function(r){AO=(r.data||[]).map(mapOrder);drawAdminOrders()})};
+  var drawAdminOrders=function(){
+    var box=$('#aOrders');if(!box)return;
+    if(!AO.length){box.innerHTML='<div class="note" style="margin-bottom:10px">No orders yet. New orders appear here.</div><button class="btn sm" data-ao="refresh">Refresh</button>';return}
+    box.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b>'+AO.length+(AO.length===1?' order':' orders')+'</b><button class="btn sm" data-ao="refresh">Refresh</button></div>'+
+    AO.map(function(o){
+      return '<div class="ao"><div class="ao-h"><b class="num">'+esc(o.id)+'</b><span class="num">'+kes(o.total)+'</span></div>'+
+       '<div class="ao-b">'+esc(o.cname||'')+' · <span class="num">'+esc(o.cphone||'')+'</span><br>'+new Date(o.created).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'})+' · '+esc(o.pay||'')+'<br>'+
+       o.items.map(function(i){return esc(i.q+' x '+(i.name||('Product '+i.id)))}).join('<br>')+'<br>'+esc(o.county||'')+', '+esc(o.address||'')+'</div>'+
+       '<label class="ao-s">Status <select data-ao-id="'+esc(o.id)+'" aria-label="Status for order '+esc(o.id)+'">'+STAGES.map(function(st,i){return '<option value="'+i+'"'+(i===o.stage?' selected':'')+'>'+st[0]+'</option>'}).join('')+'</select></label></div>';
+    }).join('');
+  };
+  var showTab=function(t){
+    $$('[data-atab]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.atab===t))});
+    var ord=t==='orders';$('#aOrders').hidden=!ord;
+    ['#aStats','.a-tool','.a-wrap'].forEach(function(sel){var el=$(sel,$('#aMain'));if(el)el.hidden=ord});
+    var tl=$('#aTools');if(tl)tl.style.visibility=ord?'hidden':'visible';
+    if(ord)loadAdminOrders();
+  };
+  $('#adminView').addEventListener('click',function(e){
+    var t=e.target.closest('[data-atab]');if(t){showTab(t.dataset.atab);return}
+    var r=e.target.closest('[data-ao="refresh"]');if(r)loadAdminOrders();
+  });
+  $('#adminView').addEventListener('change',function(e){
+    var id=e.target.dataset&&e.target.dataset.aoId;if(!id)return;
+    var o=AO.filter(function(x){return x.id===id})[0],n=+e.target.value;if(!o)return;
+    var times=Object.assign({},o.times);times[n]=new Date().toISOString();
+    sb.from('orders').update({stage:n,times:times}).eq('id',id).select().then(function(r){
+      if(r.error||!r.data||!r.data.length){toast('Could not update the order.');return loadAdminOrders()}
+      o.stage=n;o.times=times;toast('Order marked '+STAGES[n][0]);
+    });
+  });
+  sbInit=function(){
+    P=[];$('#grid').innerHTML='<div class="empty">Loading products.</div>';accessKnown=false;
+    loadProducts();
+    sb.auth.getSession().then(function(r){var s=r.data&&r.data.session;if(!s)return;return loadProfile(s.user).then(loadMyOrders).then(loadAdminOrders)})
+      .catch(function(){}).then(function(){accessKnown=true;refreshAcct();route();autoAdmin();if($('#panel').classList.contains('on'))drawPanel()});
+  };
+}
+
+acctInit();initCar();if(SBON)sbInit();else init2();route();
 })();
 </script>
 
