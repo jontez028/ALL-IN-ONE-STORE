@@ -395,6 +395,18 @@ button,a{-webkit-tap-highlight-color:transparent}
 .bn.has-img .bn-art{display:none}
 .bn.has-img h2,.bn.has-img p{max-width:58%}
 @media (max-width:720px){.bn.has-img h2{font-size:21px}.bn.has-img p{font-size:15px}.bn-img{width:34%;right:12px}}
+
+.ao-steps{display:grid;gap:8px;margin-top:12px}
+.ao-step{display:flex;align-items:center;gap:12px;min-height:48px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer}
+.ao-step.on{border-color:var(--cta);background:var(--cta-soft)}
+.ao-step input{position:absolute;opacity:0;width:0;height:0}
+.ao-step .bx{flex:none;width:26px;height:26px;border-radius:6px;border:2px solid var(--brand);background:#fff;display:grid;place-items:center}
+.ao-step input:checked+.bx{background:var(--brand)}
+.ao-step input:checked+.bx::after{content:"";width:6px;height:12px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.ao-step input:focus-visible+.bx{outline:3px solid var(--cta);outline-offset:2px}
+.ao-step input:disabled+.bx{opacity:.7}
+.ao-step .tx{display:flex;flex-direction:column}.ao-step small{color:var(--muted);font-size:13px}
+.ao-b{line-height:1.6}
 </style>
 </head>
 <body>
@@ -1334,7 +1346,7 @@ if(SBON){
       return '<div class="ao"><div class="ao-h"><b class="num">'+esc(o.id)+'</b><span class="num">'+kes(o.total)+'</span></div>'+
        '<div class="ao-b">'+esc(o.cname||'')+' · <span class="num">'+esc(o.cphone||'')+'</span><br>'+new Date(o.created).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'})+' · '+esc(o.pay||'')+'<br>'+
        o.items.map(function(i){return esc(i.q+' x '+(i.name||('Product '+i.id)))}).join('<br>')+'<br>'+esc(o.county||'')+', '+esc(o.address||'')+'</div>'+
-       '<label class="ao-s">Status <select data-ao-id="'+esc(o.id)+'" aria-label="Status for order '+esc(o.id)+'">'+STAGES.map(function(st,i){return '<option value="'+i+'"'+(i===o.stage?' selected':'')+'>'+st[0]+'</option>'}).join('')+'</select></label></div>';
+       '<div class="ao-steps" role="group" aria-label="Progress for order '+esc(o.id)+'">'+STAGES.map(function(st,i){var on=i<=o.stage,t=o.times&&o.times[i];return '<label class="ao-step'+(on?' on':'')+'"><input type="checkbox" data-ao-id="'+esc(o.id)+'" data-ao-step="'+i+'"'+(on?' checked':'')+(i===0?' disabled':'')+'><span class="bx"></span><span class="tx"><b>'+st[0]+'</b>'+(t?'<small>'+esc(new Date(t).toLocaleString('en-KE',{weekday:'short',hour:'2-digit',minute:'2-digit'}))+'</small>':'')+'</span></label>'}).join('')+'</div></div>';
     }).join('');
   };
   var showTab=function(t){
@@ -1350,11 +1362,13 @@ if(SBON){
   });
   $('#adminView').addEventListener('change',function(e){
     var id=e.target.dataset&&e.target.dataset.aoId;if(!id)return;
-    var o=AO.filter(function(x){return x.id===id})[0],n=+e.target.value;if(!o)return;
-    var times=Object.assign({},o.times);times[n]=new Date().toISOString();
+    var o=AO.filter(function(x){return x.id===id})[0],i=+e.target.dataset.aoStep;if(!o)return;
+    var n=e.target.checked?i:Math.max(0,i-1);
+    var times=Object.assign({},o.times);
+    for(var k=0;k<=4;k++){if(k>n)delete times[k];else if(!times[k])times[k]=new Date().toISOString()}
     sb.from('orders').update({stage:n,times:times}).eq('id',id).select().then(function(r){
       if(r.error||!r.data||!r.data.length){toast('Could not update the order.');return loadAdminOrders()}
-      o.stage=n;o.times=times;toast('Order marked '+STAGES[n][0]);
+      o.stage=n;o.times=times;toast('Order marked '+STAGES[n][0]);drawAdminOrders();
     });
   });
   sbInit=function(){
