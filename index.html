@@ -855,7 +855,7 @@ document.addEventListener('click',function(e){
   if(d.rm){setQty(+d.rm,0);return}
   if(d.step){stepTo(d.step);return}
   if(d.signout){sess=null;ADM=false;try{sessionStorage.removeItem('aio_adm')}catch(x){}save('aio_sess',null);ui.step='cart';refreshAcct();drawPanel();toast('Signed out');return}
-  if(d.authmode){ui.authMode=d.authmode;ui.authErr='';drawPanel();return}
+  if(d.authmode){ui.authMode=d.authmode;ui.authErr='';ui.pendingEmail=null;drawPanel();return}
   if(d.track){ui.tab='orders';ui.sel=d.track;drawPanel();return}
   if(d.sel){ui.sel=d.sel;ui.trkErr='';drawPanel();return}
   if(d.copy){var ok=function(){toast('Number copied')};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(d.copy).then(ok,function(){toast('Select the number to copy it')})}else toast('Select the number to copy it');return}
@@ -957,18 +957,23 @@ function accountView(body){
      '<div class="note" style="margin:16px 0 0">Accounts are kept on this device for now. Accounts that work on every phone arrive with the store backend.</div>';
     return;
   }
+  var EM=!!(window.AIO&&window.AIO.url);
+  if(EM&&ui.pendingEmail){
+    body.innerHTML='<div class="center"><div class="ok"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg></div><h3 style="font-size:21px">Check your email</h3><p style="color:var(--muted)">We sent a confirmation link to <b>'+esc(ui.pendingEmail)+'</b>. Open the email on any device and tap the link to finish creating your account. Look in spam if you do not see it.</p><button class="btn" data-resend="1" style="width:100%">Send the email again</button><button class="btn primary" data-authmode="signin" style="width:100%;margin-top:8px">I confirmed my email, sign in</button></div>';
+    return;
+  }
   var su=ui.authMode==='signup';
   body.innerHTML=(ui.after==='checkout'?'<div class="note" style="background:var(--cta-soft);color:var(--ink)">Create an account or sign in to place your order. Your cart is saved.</div>':'')+
    '<div class="chips" style="margin-bottom:14px"><button class="chip" data-authmode="signup" aria-pressed="'+su+'">Create account</button><button class="chip" data-authmode="signin" aria-pressed="'+!su+'">Sign in</button></div>'+
    '<form id="authForm" novalidate>'+
    (su?'<div class="field"><label for="u-name">Full name</label><input id="u-name" type="text" autocomplete="name"></div>':'')+
-   '<div class="field"><label for="u-phone">Phone number</label><input id="u-phone" type="tel" autocomplete="tel" placeholder="0712 345 678"></div>'+
-   (su?'<div class="field"><label for="u-email">Email (optional)</label><input id="u-email" type="text" autocomplete="email"></div>':'')+
+   ((EM&&!su)?'':'<div class="field"><label for="u-phone">Phone number</label><input id="u-phone" type="tel" autocomplete="tel" placeholder="0712 345 678"></div>')+
+   (EM?'<div class="field"><label for="u-email">Email</label><input id="u-email" type="email" autocomplete="email"'+(su?' placeholder="We send a confirmation link here"':'')+'></div>':(su?'<div class="field"><label for="u-email">Email (optional)</label><input id="u-email" type="text" autocomplete="email"></div>':''))+
    '<div class="field"><label for="u-pw">Password</label><input id="u-pw" type="password" autocomplete="'+(su?'new-password':'current-password')+'"'+(su?' placeholder="At least 8 characters"':'')+'></div>'+
    (su?'<div class="field"><label for="u-pw2">Confirm password</label><input id="u-pw2" type="password" autocomplete="new-password"></div>':'')+
    '<div class="form-err" role="alert">'+esc(ui.authErr)+'</div>'+
    '<button class="btn primary" type="submit" style="width:100%">'+(su?'Create my account':'Sign in')+'</button></form>'+
-   '<div class="note" style="margin:16px 0 0">Accounts are kept on this device for now. Accounts that work on every phone arrive with the store backend.</div>';
+   (EM?'':'<div class="note" style="margin:16px 0 0">Accounts are kept on this device for now. Accounts that work on every phone arrive with the store backend.</div>');
 }
 
 /* live catalogue and admin */
@@ -1229,30 +1234,44 @@ if(SBON){
   stageOf=function(o){return o.stage!=null?o.stage:(o.fixed!=null?o.fixed:Math.min(4,Math.floor((Date.now()-o.created)/STAGE_MS)))};
   timeLabel=function(o,i){var t=o.times&&o.times[i];return t?new Date(t).toLocaleString('en-KE',{weekday:'short',hour:'2-digit',minute:'2-digit'}):''};
   var afterLogin=function(user){return loadProfile(user).then(loadMyOrders).then(function(){if(!prof)throw 0;return loadAdminOrders()}).then(function(){startSession(prof)})};
+  var REDIR=location.origin+location.pathname;
+  var EMAILRE=/^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   authSubmit=function(){
     var err=function(m){ui.authErr=m;drawPanel()};
-    var ph=$('#u-phone').value.trim(),pw=$('#u-pw').value;
+    var em=$('#u-email').value.trim(),pw=$('#u-pw').value;
     if(ui.authMode==='signup'){
-      var nm=$('#u-name').value.trim(),em=$('#u-email').value.trim(),pw2=$('#u-pw2').value;
+      var nm=$('#u-name').value.trim(),ph=$('#u-phone').value.trim(),pw2=$('#u-pw2').value;
       if(nm.length<2)return err('Enter your full name.');
       if(!validPhone(ph))return err('Enter a valid Kenyan phone number, like 0712 345 678.');
-      if(em&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return err('That email address does not look right.');
+      if(!EMAILRE.test(em))return err('Enter a valid email address. We send a confirmation link to it.');
       if(pw.length<8)return err('Use a password with at least 8 characters.');
       if(pw!==pw2)return err('The two passwords do not match.');
-      sb.auth.signUp({email:synth(ph),password:pw,options:{data:{name:nm,phone:ph,email:em}}}).then(function(r){
-        if(r.error)return err(/already|registered/i.test(r.error.message||'')?'An account with this phone number already exists. Sign in instead.':'Could not create the account. Try again.');
-        if(!r.data||!r.data.session)return err('The account was created but sign-in is not switched on yet. Please tell the store.');
-        return afterLogin(r.data.user);
+      sb.auth.signUp({email:em,password:pw,options:{data:{name:nm,phone:ph},emailRedirectTo:REDIR}}).then(function(r){
+        if(r.error){
+          var m=(r.error.message||'')+' '+(r.error.code||'')+' '+(r.error.status||'');
+          return err(/already|registered/i.test(m)?'An account with this email already exists. Sign in instead.':(/rate|429|over_email/i.test(m)?'Too many emails were sent just now. Wait a few minutes and try again.':'Could not create the account. Try again.'));
+        }
+        if(r.data&&r.data.session)return afterLogin(r.data.user);
+        if(r.data&&r.data.user&&r.data.user.identities&&!r.data.user.identities.length)return err('An account with this email already exists. Sign in instead.');
+        ui.pendingEmail=em;ui.authErr='';drawPanel();
       }).catch(function(){err('Could not create the account. Try again.')});
     }else{
       if(Date.now()<ui.lock)return err('Too many tries. Wait a moment and try again.');
-      if(!validPhone(ph))return err('Enter a valid Kenyan phone number.');
-      sb.auth.signInWithPassword({email:synth(ph),password:pw}).then(function(r){
-        if(r.error){ui.fails++;if(ui.fails>=5){ui.lock=Date.now()+30000;ui.fails=0}return err('Phone number or password is not right.')}
+      if(!EMAILRE.test(em))return err('Enter the email address you signed up with.');
+      sb.auth.signInWithPassword({email:em,password:pw}).then(function(r){
+        if(r.error){
+          if(/confirm/i.test(r.error.message||'')){ui.pendingEmail=em;ui.authErr='';return drawPanel()}
+          ui.fails++;if(ui.fails>=5){ui.lock=Date.now()+30000;ui.fails=0}
+          return err('Email or password is not right.');
+        }
         return afterLogin(r.data.user);
       }).catch(function(){err('Could not sign in. Try again.')});
     }
   };
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('[data-resend]')||!ui.pendingEmail)return;
+    sb.auth.resend({type:'signup',email:ui.pendingEmail,options:{emailRedirectTo:REDIR}}).then(function(r){toast(r.error?'Could not send it yet. Wait a minute and try again.':'Email sent again')});
+  });
   saveAddr=function(){if(!prof)return;var c=$('#ad-county').value,a=$('#ad-address').value.trim();
     sb.from('profiles').update({county:c,address:a}).eq('id',prof.id).then(function(r){if(r.error)return toast('Could not save. Try again.');prof.county=c;prof.address=a;fillFromAccount(prof);toast('Delivery details saved')})};
   finishOrder=function(){

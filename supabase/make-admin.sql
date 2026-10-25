@@ -1,7 +1,7 @@
--- Run this AFTER you have created your own account on the store (phone number and password).
--- It makes that account the admin. Change the number if yours is different.
+-- Run this AFTER you have created your account on the store and confirmed your email.
+-- Replace the address below with the email you used, then press Run.
 update public.profiles
 set is_admin = true
-where regexp_replace(phone, '\D', '', 'g') like '%745384430';
+where id = (select id from auth.users where lower(email) = lower('YOUR-EMAIL@example.com'));
 
-select name, phone, is_admin from public.profiles where is_admin;
+select name, email, is_admin from public.profiles where is_admin;
