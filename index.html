@@ -390,6 +390,11 @@ button,a{-webkit-tap-highlight-color:transparent}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
 .ao{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--surface)}.ao-h{display:flex;justify-content:space-between;gap:10px;font-size:18px;margin-bottom:6px}.ao-b{font-size:15px;color:var(--ink);margin-bottom:10px;word-break:break-word}.ao-s{display:flex;gap:10px;align-items:center;font-weight:700}.ao-s select{flex:1;min-width:0}
+.cc i{overflow:hidden}.cc i img{width:100%;height:100%;object-fit:cover;display:block}
+.bn-img{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:36%;max-width:210px;aspect-ratio:1/1;object-fit:cover;border-radius:14px;border:3px solid rgba(255,255,255,.9);box-shadow:0 6px 18px rgba(0,0,0,.28);background:#fff}
+.bn.has-img .bn-art{display:none}
+.bn.has-img h2,.bn.has-img p{max-width:58%}
+@media (max-width:720px){.bn.has-img h2{font-size:21px}.bn.has-img p{font-size:15px}.bn-img{width:34%;right:12px}}
 </style>
 </head>
 <body>
@@ -633,6 +638,27 @@ function railCard(p){
    '<div class="rbody"><h3>'+esc(p.name)+'</h3><span class="rate"><b>&#9733;</b> '+p.rating.toFixed(1)+'</span><strong class="num">'+kes(p.price)+'</strong>'+(p.old?'<span class="roff"><s class="num">'+kes(p.old)+'</s><em>-'+d+'%</em></span>':'')+'</div>'+
    '<button class="radd" data-add="'+p.id+'" aria-label="Add '+esc(p.name)+' to cart">+</button></article>';
 }
+function catImg(id){
+  var l=P.filter(function(p){return !p.hidden&&p.cat===id&&psrc(p)}).sort(function(a,b){return b.rating-a.rating});
+  return l.length?psrc(l[0]):'';
+}
+function dressBanners(vis){
+  var withImg=vis.filter(function(p){return psrc(p)});
+  var pick=function(cats,sortFn){var l=withImg.filter(function(p){return !cats||cats.indexOf(p.cat)>-1});if(sortFn)l.sort(sortFn);else l.sort(function(a,b){return b.rating-a.rating});return l[0]||null};
+  var map={
+    deals:pick(null,function(a,b){return pct(b)-pct(a)}),
+    shop:pick(['appliances','home']),
+    help:pick(['phones']),
+    quote:pick(['computers','electronics']),
+    orders:pick(['clothing','electronics','appliances'])
+  };
+  $$('.bn[data-bn]').forEach(function(b){
+    var old=b.querySelector('.bn-img');if(old)old.remove();
+    var p=map[b.dataset.bn];
+    if(p){var im=document.createElement('img');im.className='bn-img';im.alt='';im.src=psrc(p);b.appendChild(im);b.classList.add('has-img')}
+    else b.classList.remove('has-img');
+  });
+}
 function drawDeals(){
   var vis=P.filter(function(p){return !p.hidden});
   var deals=vis.filter(function(p){return p.old}).sort(function(a,b){return pct(b)-pct(a)}).slice(0,10);
@@ -640,7 +666,8 @@ function drawDeals(){
   $('#flashSec').hidden=!deals.length;$('#flashRail').innerHTML=deals.map(railCard).join('');
   $('#topSec').hidden=!top.length;$('#topRail').innerHTML=top.map(railCard).join('');
   var b=$('#bnDeal');if(b)b.textContent=deals.length?'Up to '+pct(deals[0])+'% off phones, TVs, appliances and more.':'Great prices on phones, TVs, appliances and more.';
-  var cr=$('#catRow');if(cr&&!cr.dataset.done){cr.innerHTML=CATS.map(function(c){return '<button class="cc" data-catc="'+c.id+'" style="--c:'+c.c+'"><i><svg viewBox="0 0 24 24">'+c.ic+'</svg></i><span>'+esc(c.name)+'</span></button>'}).join('');cr.dataset.done='1'}
+  var cr=$('#catRow');if(cr){cr.innerHTML=CATS.map(function(c){var u=catImg(c.id);return '<button class="cc" data-catc="'+c.id+'" style="--c:'+c.c+'"><i>'+(u?'<img alt="" loading="lazy" src="'+u+'">':'<svg viewBox="0 0 24 24">'+c.ic+'</svg>')+'</i><span>'+esc(c.name)+'</span></button>'}).join('')}
+  dressBanners(vis);
 }
 function tick(){
   var n=new Date(),e=new Date(n);e.setHours(24,0,0,0);var s=Math.max(0,Math.floor((e-n)/1000)),z=function(x){return String(x).padStart(2,'0')};
