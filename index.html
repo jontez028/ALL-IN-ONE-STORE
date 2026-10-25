@@ -823,7 +823,7 @@ function ordersView(body){
   var hasDemo=orders.some(function(o){return o.demo});
   h+=(me()?'':'<div class="note">Sign in to see the orders you place.'+(hasDemo?' The sample order below shows how tracking looks.':'')+'</div><button class="btn primary" style="width:100%;margin-bottom:14px" data-open="account">Sign in or create an account</button>')+(hasDemo?'<div class="note">Sample order AIO-10482 shows how tracking looks. Your own orders appear with it.</div>':'');
   if(me()&&!list.length)h+='<div class="note">You have no orders yet. Orders you place appear here.</div>';
-  h+=list.map(function(o){var s=stageOf(o);return '<button class="ocard" data-sel="'+o.id+'" aria-current="'+(o.id===ui.sel)+'"><span><b class="num">'+o.id+'</b><br><small style="color:var(--muted)">'+o.items.reduce(function(a,i){return a+i.q},0)+' items · '+kes(o.total)+'</small></span><span class="pill'+(s===4?' go':'')+'">'+STAGES[s][0]+'</span></button>'}).join('');
+  h+=list.map(function(o){var s=stageOf(o);return '<button class="ocard" data-sel="'+o.id+'" aria-current="'+(o.id===ui.sel)+'"><span><b class="num">'+o.id+'</b><br><small style="color:var(--muted)">'+o.items.reduce(function(a,i){return a+i.q},0)+' items · '+kes(o.total)+'</small></span><span class="pill'+(s===4?' live':'')+'">'+STAGES[s][0]+'</span></button>'}).join('');
   var o=myOrders().filter(function(x){return x.id===ui.sel})[0];
   if(o){
     var s=stageOf(o);
