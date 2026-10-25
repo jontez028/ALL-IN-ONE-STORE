@@ -177,8 +177,8 @@ footer{border-top:1px solid var(--line);padding-block:22px 40px;color:var(--mute
 .trk input{flex:1}
 .ocard{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;text-align:left;background:var(--surface);margin-bottom:8px}
 .ocard[aria-current="true"]{border-color:var(--cta);background:var(--cta-soft)}
-.pill{font-size:12px;font-weight:700;padding:3px 9px;border-radius:12px;background:var(--surface-2);white-space:nowrap}
-.pill.go{background:var(--cta-soft);color:var(--ink)}
+.pill{font-size:14px;font-weight:700;padding:7px 14px;border-radius:16px;line-height:1.2;background:var(--surface-2);white-space:nowrap}
+.pill.live{background:var(--cta-soft);color:var(--ink)}
 .tl{list-style:none;margin:14px 0 0;padding:0}
 .tl li{position:relative;padding:0 0 18px 34px;color:var(--muted)}
 .tl li::before{content:"";position:absolute;left:8px;top:22px;bottom:-4px;width:2px;background:var(--line)}
@@ -213,7 +213,7 @@ details p{margin:8px 0 0;color:var(--muted);font-size:14px}
 .a-head{display:flex;gap:14px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px}
 .a-head h1{font-size:32px}.a-head p{margin:4px 0 0;max-width:60ch}
 .a-acts{display:flex;gap:8px;flex-wrap:wrap}
-.a-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.a-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .a-tool{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}.a-tool input{flex:1 1 220px}
 .a-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .a-tab{border-collapse:collapse;width:100%;min-width:840px}
@@ -472,7 +472,7 @@ button,a{-webkit-tap-highlight-color:transparent}
     <div class="a-acts"><button class="btn" data-a="store">View store</button><button class="btn" data-a="signout">Sign out</button><span id="aTools" class="a-acts" hidden><button class="btn" data-a="photos">Add photos</button><button class="btn" data-a="bulk">Change prices</button><button class="btn primary" data-a="new">Add product</button></span></div>
   </div>
   <div id="aGate"></div>
-  <div id="aMain" hidden><div class="chips" id="aTabs" style="margin-bottom:12px"><button class="chip" data-atab="products" aria-pressed="true">Products</button><button class="chip" data-atab="orders" aria-pressed="false">Orders</button></div><div id="aOrders" hidden></div>
+  <div id="aMain" hidden><div class="chips" id="aTabs" style="margin-bottom:20px;gap:12px"><button class="chip" data-atab="products" aria-pressed="true">Products</button><button class="chip" data-atab="orders" aria-pressed="false">Orders</button></div><div id="aOrders" hidden></div>
     <div class="a-stats" id="aStats"></div>
     <div class="a-tool"><input id="aSearch" type="text" placeholder="Search products" aria-label="Search products" autocomplete="off"><select id="aCat" aria-label="Filter by category"></select></div>
     <div class="a-wrap"><table class="a-tab"><thead><tr><th>Product</th><th>Category</th><th>Price (KES)</th><th>Was price</th><th>Stock</th><th>Live</th><th></th></tr></thead><tbody id="aBody"></tbody></table></div>
@@ -1028,7 +1028,7 @@ function drawAdmin(){
   if(!isAdmin||!DB){gate.innerHTML='<div class="note">This area is for the store owner. Open this page while signed in to the Claude account that owns it to manage products.</div>';main.hidden=true;tools.hidden=true;return}
   gate.innerHTML='';main.hidden=false;tools.hidden=false;
   var live_=P.filter(function(p){return !p.hidden}).length,low=P.filter(function(p){return p.stock>0&&p.stock<=5}).length,out=P.filter(function(p){return p.stock===0}).length;
-  $('#aStats').innerHTML='<span class="pill">'+P.length+' products</span><span class="pill go">'+live_+' live on the store</span><span class="pill">'+low+' low on stock</span><span class="pill">'+out+' sold out</span>';
+  $('#aStats').innerHTML='<span class="pill">'+P.length+' products</span><span class="pill live">'+live_+' live on the store</span><span class="pill">'+low+' low on stock</span><span class="pill">'+out+' sold out</span>';
   var q=A.q.trim().toLowerCase();
   var rows=P.filter(function(p){return (A.cat==='all'||p.cat===A.cat)&&(!q||p.name.toLowerCase().indexOf(q)>-1)});
   if(!P.length){$('#aBody').innerHTML='<tr><td colspan="7" style="padding:28px;text-align:center">No products yet. <button class="btn sm primary" data-a="seed">Load the sample products</button> or add your first one.</td></tr>';return}
@@ -1320,7 +1320,12 @@ if(SBON){
   /* admin orders */
   var AO=[];
   var loadAdminOrders=function(){if(!isAdmin)return Promise.resolve();
-    return sb.from('orders').select('*').order('created_at',{ascending:false}).limit(200).then(function(r){AO=(r.data||[]).map(mapOrder);drawAdminOrders()})};
+    return sb.from('orders').select('*').order('created_at',{ascending:false}).limit(200).then(function(r){
+      if(r.error){var bx=$('#aOrders');if(bx&&!bx.hidden)bx.innerHTML='<div class="note" style="margin-bottom:10px">Could not load orders: '+esc(r.error.message||'try again')+'</div><button class="btn sm" data-ao="refresh">Refresh</button>';return}
+      AO=(r.data||[]).map(mapOrder);drawAdminOrders();
+      var nw=AO.filter(function(o){return o.stage===0}).length,tb=$('[data-atab="orders"]');if(tb)tb.textContent='Orders'+(nw?' ('+nw+' new)':'');
+    })};
+  setInterval(function(){if(isAdmin&&document.visibilityState==='visible')loadAdminOrders()},20000);
   var drawAdminOrders=function(){
     var box=$('#aOrders');if(!box)return;
     if(!AO.length){box.innerHTML='<div class="note" style="margin-bottom:10px">No orders yet. New orders appear here.</div><button class="btn sm" data-ao="refresh">Refresh</button>';return}
