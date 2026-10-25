@@ -421,6 +421,23 @@ button,a{-webkit-tap-highlight-color:transparent}
 #instBar button{height:40px;padding:0 14px;border-radius:20px;border:0;font-weight:700;font-size:15px}
 #instBar .ib-go{background:var(--cta);color:#000}#instBar .ib-x{background:transparent;color:#fff;font-size:20px;padding:0 8px}
 @media (min-width:721px){#instBar{display:none!important}}
+
+.m-art .gal{position:absolute;inset:0}
+.gal-track{position:absolute;inset:0;display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.gal-track::-webkit-scrollbar{display:none}
+.gimg{flex:none;width:100%;height:100%;object-fit:cover;scroll-snap-align:center}
+.gnav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#0b2a6b;font-size:30px;line-height:1;box-shadow:0 2px 10px rgba(0,0,0,.3);display:grid;place-items:center;padding:0 0 4px}
+.gnav.prev{left:10px}.gnav.next{right:10px}
+.gcount{position:absolute;top:10px;left:10px;background:rgba(11,42,107,.88);color:#fff;font-size:13px;font-weight:700;padding:3px 10px;border-radius:12px}
+.gdots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:7px}
+.gdots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.7);box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.gdots i.on{background:#c9a227;width:22px;border-radius:5px}
+.m-art:has(.gal){min-height:300px}
+@media (max-width:640px){.m-art:has(.gal){min-height:280px}}
+.agal{display:flex;flex-wrap:wrap;gap:10px}
+.ag{display:grid;gap:6px;justify-items:center;width:96px}
+.ag .btn.sm{width:100%;height:34px;font-size:13px;padding:0 4px}
+.mainTag{font-weight:700;color:#0b2a6b;height:34px;display:grid;place-items:center}
 </style>
 </head>
 <body>
@@ -589,7 +606,9 @@ function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 function icon(cat,cls){return '<svg class="'+(cls||'ic')+'" viewBox="0 0 24 24" aria-hidden="true">'+CAT[cat].ic+'</svg>'}
 function byId(id){return P.filter(function(p){return p.id===id})[0]}
 function blobUrl(id){return /^https?:/.test(id)?id:'/_blob/'+id}
-function psrc(p){var u=p.image||'';if(!/^[^"'<>\s]+$/.test(u))return '';if(window.AIO&&AIO.url&&u.indexOf(AIO.url+'/storage/v1/object/public/')===0)return u;return /^img\/[A-Za-z0-9._-]+\.(jpe?g|png|webp)$/.test(u)?u:''}
+function okImg(u){if(!/^[^"'<>\s]+$/.test(u))return '';if(window.AIO&&AIO.url&&u.indexOf(AIO.url+'/storage/v1/object/public/')===0)return u;return /^img\/[A-Za-z0-9._-]+\.(jpe?g|png|webp)$/.test(u)?u:''}
+function imgs(p){return String(p.image||'').split('|').map(okImg).filter(Boolean)}
+function psrc(p){return imgs(p)[0]||''}
 function art(p){var u=psrc(p);return u?'<img class="pimg" loading="lazy" alt="" src="'+u+'">':icon(p.cat)}
 var toastT;function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on')},2400)}
 
@@ -880,11 +899,18 @@ function helpView(body){
 function openView(id){
   var p=byId(id),c=CAT[p.cat],pct=p.old?Math.round((p.old-p.price)/p.old*100):0;
   var m=$('#modal');
-  m.innerHTML='<div class="m-box" style="--c:'+c.c+'"><div class="m-art">'+(psrc(p)?'<img class="pimg" alt="" src="'+psrc(p)+'">':icon(p.cat,'ic'))+'</div><div class="m-info"><div style="display:flex;justify-content:space-between;align-items:center"><span class="cat">'+esc(c.name)+'</span><button class="x" data-closemodal="1" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div><h2 style="font-size:22px">'+esc(p.name)+'</h2><span class="rate"><b>&#9733;</b> '+p.rating.toFixed(1)+' · '+(p.stock<=5?'Only '+p.stock+' left':'In stock')+'</span>'+
+  m.innerHTML='<div class="m-box" style="--c:'+c.c+'"><div class="m-art">'+gallery(p)+'</div><div class="m-info"><div style="display:flex;justify-content:space-between;align-items:center"><span class="cat">'+esc(c.name)+'</span><button class="x" data-closemodal="1" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div><h2 style="font-size:22px">'+esc(p.name)+'</h2><span class="rate"><b>&#9733;</b> '+p.rating.toFixed(1)+' · '+(p.stock<=5?'Only '+p.stock+' left':'In stock')+'</span>'+
    '<div class="price"><strong class="num" style="font-size:26px">'+kes(p.price)+'</strong>'+(p.old?'<s class="num">'+kes(p.old)+'</s><span class="pill" style="background:var(--deal-soft);color:var(--deal)">Save '+pct+'%</span>':'')+'</div>'+
    '<ul>'+p.spec.map(function(s){return '<li>'+esc(s)+'</li>'}).join('')+'</ul>'+
    '<div class="m-acts"><div class="qty"><button data-mdec="1" aria-label="Fewer">&minus;</button><span class="num" id="mq">1</span><button data-minc="1" aria-label="More">+</button></div><button class="btn primary" data-madd="'+p.id+'" style="flex:1">Add to cart</button></div></div></div>';
   m.classList.add('on');
+}
+function gallery(p){
+  var l=imgs(p);if(!l.length)return icon(p.cat,'ic');
+  if(l.length===1)return '<img class="pimg" alt="" src="'+l[0]+'">';
+  return '<div class="gal" id="gal"><div class="gal-track" id="galTrack">'+l.map(function(u,i){return '<img class="gimg" alt="Photo '+(i+1)+' of '+l.length+'" '+(i?'loading="lazy" ':'')+'src="'+u+'">'}).join('')+'</div>'+
+   '<button type="button" class="gnav prev" data-gal="-1" aria-label="Previous photo">&#8249;</button><button type="button" class="gnav next" data-gal="1" aria-label="Next photo">&#8250;</button>'+
+   '<span class="gcount" id="galCount">1 / '+l.length+'</span><div class="gdots" id="galDots">'+l.map(function(u,i){return '<i'+(i?'':' class="on"')+'></i>'}).join('')+'</div></div>';
 }
 function closeModal(){$('#modal').classList.remove('on')}
 
@@ -1090,11 +1116,11 @@ function openForm(p){
    '<div class="row2"><div class="field"><label for="a-old">Was price (optional)</label><input id="a-old" type="number" min="0" step="10" value="'+(p&&p.old?p.old:'')+'" placeholder="Shows a discount"></div>'+
    '<div class="field"><label for="a-stock">Stock</label><input id="a-stock" type="number" min="0" step="1" value="'+(p?p.stock:'')+'"></div></div>'+
    '<div class="field"><label for="a-spec">Details (one per line)</label><textarea id="a-spec" rows="4" placeholder="6.7-inch display&#10;8GB RAM, 256GB storage&#10;1-year warranty">'+esc(p?p.spec.join('\n'):'')+'</textarea></div>'+
-   '<div class="field"><label>Photo</label>'+(ASSETS?'<div class="up"><span class="a-th big" id="aPrev" style="--c:'+c.c+'">'+(AF.imageId?'<img alt="" src="'+blobUrl(AF.imageId)+'">':'<svg viewBox="0 0 24 24">'+c.ic+'</svg>')+'</span><div><input type="file" id="aFile" accept="image/*" style="height:auto;border:0;padding:0"><div style="margin-top:6px"><button type="button" class="btn sm" data-a="rmimg">Remove photo</button></div></div></div>':'<div class="note" style="margin:0">Photo upload is available to editors of this page.</div>')+'</div>'+
+   '<div class="field"><label>Photos</label>'+(ASSETS?'<div id="aGal" class="agal"></div><input type="file" id="aFile" accept="image/*" multiple style="height:auto;border:0;padding:0;margin-top:8px"><div class="rate" style="margin-top:4px">You can choose several photos. The first one is the main photo. Clients swipe or tap the arrows to see the rest.</div>':'<div class="note" style="margin:0">Photo upload is available to editors of this page.</div>')+'</div>'+
    '<label class="chk"><input type="checkbox" id="a-vis"'+(p&&p.hidden?'':' checked')+'> Show on the store</label>'+
    '<div class="form-err" id="aErr" role="alert"></div>'+
    '<div class="row2"><button type="button" class="btn" data-a="close">Cancel</button><button type="submit" class="btn primary" id="aSave">'+(p?'Save changes':'Add product')+'</button></div></form></div>';
-  $('#aModal').classList.add('on');
+  $('#aModal').classList.add('on');drawAfGal();
   setTimeout(function(){var n=$('#a-name');if(n)n.focus()},50);
 }
 function shrink(file){return new Promise(function(res){try{var u=URL.createObjectURL(file),im=new Image();im.onload=function(){var s=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext('2d').drawImage(im,0,0,c.width,c.height);c.toBlob(function(b){URL.revokeObjectURL(u);res(b||file)},'image/jpeg',.85)};im.onerror=function(){URL.revokeObjectURL(u);res(file)};im.src=u}catch(x){res(file)}})}
@@ -1145,6 +1171,21 @@ function guessProduct(fname){
   P.forEach(function(p){var pt=tokens(p.name),sc=0;ft.forEach(function(t){if(pt.indexOf(t)>-1)sc++});if(sc>bs){bs=sc;best=p.id}});
   return bs>=1?best:0;
 }
+function afList(){return AF&&AF.imageId?String(AF.imageId).split('|').filter(Boolean):[]}
+function afSet(l){AF.imageId=l.join('|');drawAfGal()}
+function drawAfGal(){
+  var box=$('#aGal');if(!box)return;var l=afList();
+  box.innerHTML=l.length?l.map(function(id,i){return '<div class="ag"><span class="a-th big" style="--c:#0b2a6b"><img alt="" src="'+blobUrl(id)+'"></span>'+(i?'<button type="button" class="btn sm" data-a="mainimg" data-i="'+i+'">Make main</button>':'<small class="mainTag">Main photo</small>')+'<button type="button" class="btn sm" data-a="rmimg" data-i="'+i+'">Remove</button></div>'}).join(''):'<div class="note" style="margin:0">No photos yet.</div>';
+}
+async function addAfFiles(files){
+  var err=$('#aErr'),list=Array.prototype.slice.call(files,0,8);
+  for(var i=0;i<list.length;i++){
+    err.textContent='Uploading photo '+(i+1)+' of '+list.length+'.';
+    try{var b=await shrink(list[i]);var r=await ASSETS.upload(b,{type:b.type||'image/jpeg'});var l=afList();if(l.length<8){l.push(r.id);afSet(l)}}
+    catch(e){err.textContent='Could not upload '+list[i].name+'. Try a JPG or PNG file.';return}
+  }
+  err.textContent='';
+}
 function photoRows(){
   $('#pList').innerHTML=PH.map(function(it,i){
     return '<div class="line" style="grid-template-columns:76px 1fr;align-items:start"><span class="a-th big" style="--c:#0b2a6b"><img alt="" src="'+it.url+'"></span><div><small style="color:var(--muted);word-break:break-all">'+esc(it.name)+'</small>'+
@@ -1170,7 +1211,7 @@ async function addPhotoFiles(files){
 }
 async function savePhotos(){
   var t=PH.filter(function(x){return x.sel}),b=$('#pSave'),n=0;b.disabled=true;
-  try{for(var i=0;i<t.length;i++){await pref(t[i].sel).update({imageId:t[i].imageId});n++}closeA();PH=[];toast(n+(n===1?' photo':' photos')+' saved')}
+  try{for(var i=0;i<t.length;i++){var cur=byId(t[i].sel),ex=cur?String(cur.imageId||cur.image||'').split('|').filter(Boolean):[];if(ex.indexOf(t[i].imageId)<0)ex.push(t[i].imageId);await pref(t[i].sel).update({imageId:ex.slice(0,8).join('|')});n++}closeA();PH=[];toast(n+(n===1?' photo':' photos')+' saved')}
   catch(e){b.disabled=false;$('#aErr').textContent=errMsg(e)+(n?' '+n+' were saved.':'')}
 }
 function adminClick(e){
@@ -1185,7 +1226,8 @@ function adminClick(e){
   else if(a==='signout'){ADM=false;sess=null;save('aio_sess',null);try{sessionStorage.removeItem('aio_adm')}catch(x){}refreshAcct();route();toast('Signed out')}
   else if(a==='close')closeA();
   else if(a==='applybulk')applyBulk();
-  else if(a==='rmimg'){AF.imageId='';var pv=$('#aPrev');if(pv){var c=CAT[$('#a-cat').value];pv.innerHTML='<svg viewBox="0 0 24 24">'+c.ic+'</svg>'}var fi=$('#aFile');if(fi)fi.value=''}
+  else if(a==='rmimg'){var l=afList();l.splice(+b.dataset.i,1);afSet(l)}
+  else if(a==='mainimg'){var l2=afList(),mv=l2.splice(+b.dataset.i,1)[0];l2.unshift(mv);afSet(l2)}
   else if(a==='del'){
     if(armed!==id){armed=id;clearTimeout(armT);armT=setTimeout(function(){armed=null;drawAdmin()},4000);drawAdmin()}
     else{armed=null;clearTimeout(armT);pref(id).delete().then(function(){toast('Product deleted')},function(er){toast(errMsg(er));drawAdmin()})}
@@ -1200,8 +1242,7 @@ $('#aModal').addEventListener('change',function(e){
   if(e.target.id==='pFiles'&&e.target.files.length&&ASSETS){addPhotoFiles(e.target.files);e.target.value='';return}
   if(e.target.dataset&&e.target.dataset.pi!==undefined){PH[+e.target.dataset.pi].sel=+e.target.value||0;photoRows();return}
   if(e.target.id==='aFile'&&e.target.files[0]&&ASSETS){
-    var err=$('#aErr');err.textContent='Uploading photo.';
-    shrink(e.target.files[0]).then(function(b){return ASSETS.upload(b,{type:b.type||'image/jpeg'})}).then(function(r){AF.imageId=r.id;$('#aPrev').innerHTML='<img alt="" src="'+r.url+'">';err.textContent=''},function(){err.textContent='Could not upload that photo. Try a JPG or PNG file.'});
+    addAfFiles(e.target.files);e.target.value='';
   }
 });
 $('#aBody').addEventListener('change',function(e){var tr=e.target.closest('tr');if(!tr||!e.target.dataset.f)return;saveField(+tr.dataset.pid,e.target.dataset.f,e.target)});
@@ -1410,6 +1451,18 @@ function show(txt,btn){if(dismissed()||standalone()||bar)return;bar=document.cre
  var g=bar.querySelector('.ib-go');if(g)g.onclick=function(){ev.prompt();ev.userChoice.then(function(){bar.remove()})}}
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;setTimeout(function(){show('Get the All In One Store app',true)},4000)});
 if(/iphone|ipad/i.test(navigator.userAgent)&&!standalone())setTimeout(function(){show('Install this app: tap Share, then Add to Home Screen',false)},5000);
+})();</script>
+<script>(function(){
+function gal(){return document.getElementById('galTrack')}
+function sync(){var t=gal();if(!t)return;var n=t.children.length,i=Math.round(t.scrollLeft/Math.max(1,t.clientWidth));i=Math.max(0,Math.min(n-1,i));
+ var d=document.getElementById('galDots');if(d)Array.prototype.forEach.call(d.children,function(x,k){x.className=k===i?'on':''});
+ var c=document.getElementById('galCount');if(c)c.textContent=(i+1)+' / '+n}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-gal]');if(!b)return;var t=gal();if(!t)return;
+ var n=t.children.length,i=Math.round(t.scrollLeft/Math.max(1,t.clientWidth))+(+b.dataset.gal);if(i>=n)i=0;if(i<0)i=n-1;
+ t.scrollTo({left:i*t.clientWidth,behavior:'smooth'})});
+document.addEventListener('scroll',function(e){if(e.target&&e.target.id==='galTrack')sync()},true);
+document.addEventListener('keydown',function(e){var t=gal();if(!t||!document.getElementById('modal').classList.contains('on'))return;
+ if(e.key==='ArrowRight'){var b=document.querySelector('[data-gal="1"]');if(b)b.click()}else if(e.key==='ArrowLeft'){var p=document.querySelector('[data-gal="-1"]');if(p)p.click()}});
 })();</script>
 </body>
 </html>
