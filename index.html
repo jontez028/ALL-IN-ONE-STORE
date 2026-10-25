@@ -8,6 +8,14 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <title>All In One Store</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b2a6b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="All In One">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: sticky navy header, compact hero with a live deal timer, filterable product grid,
@@ -407,6 +415,12 @@ button,a{-webkit-tap-highlight-color:transparent}
 .ao-step input:disabled+.bx{opacity:.7}
 .ao-step .tx{display:flex;flex-direction:column}.ao-step small{color:var(--muted);font-size:13px}
 .ao-b{line-height:1.6}
+
+#instBar{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:60;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--brand);color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+#instBar span{flex:1;font-weight:700;font-size:15px;line-height:1.3}
+#instBar button{height:40px;padding:0 14px;border-radius:20px;border:0;font-weight:700;font-size:15px}
+#instBar .ib-go{background:var(--cta);color:#000}#instBar .ib-x{background:transparent;color:#fff;font-size:20px;padding:0 8px}
+@media (min-width:721px){#instBar{display:none!important}}
 </style>
 </head>
 <body>
@@ -1384,5 +1398,18 @@ acctInit();initCar();if(SBON)sbInit();else init2();route();
 })();
 </script>
 
+<script>if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+<script>(function(){
+var ev=null,bar=null;
+function dismissed(){try{return localStorage.getItem('aio_inst')==='1'}catch(e){return false}}
+function standalone(){return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone}
+function show(txt,btn){if(dismissed()||standalone()||bar)return;bar=document.createElement('div');bar.id='instBar';
+ bar.innerHTML='<span>'+txt+'</span>'+(btn?'<button class="ib-go" type="button">Install</button>':'')+'<button class="ib-x" type="button" aria-label="Close">&times;</button>';
+ document.body.appendChild(bar);
+ bar.querySelector('.ib-x').onclick=function(){bar.remove();try{localStorage.setItem('aio_inst','1')}catch(e){}};
+ var g=bar.querySelector('.ib-go');if(g)g.onclick=function(){ev.prompt();ev.userChoice.then(function(){bar.remove()})}}
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;setTimeout(function(){show('Get the All In One Store app',true)},4000)});
+if(/iphone|ipad/i.test(navigator.userAgent)&&!standalone())setTimeout(function(){show('Install this app: tap Share, then Add to Home Screen',false)},5000);
+})();</script>
 </body>
 </html>
