@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="All In One Store: phones, laptops, appliances, clothes and household items delivered across Kenya.">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <title>All In One Store</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1314,6 +1314,7 @@ if(SBON){
   };
 }
 
+if(!SBON&&window.AIO&&window.AIO.url){authSubmit=function(){ui.authErr='The sign-in service could not load. Check your connection and refresh the page.';drawPanel()}}
 acctInit();initCar();if(SBON)sbInit();else init2();route();
 })();
 </script>
