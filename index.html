@@ -438,6 +438,63 @@ button,a{-webkit-tap-highlight-color:transparent}
 .ag{display:grid;gap:6px;justify-items:center;width:96px}
 .ag .btn.sm{width:100%;height:34px;font-size:13px;padding:0 4px}
 .mainTag{font-weight:700;color:#0b2a6b;height:34px;display:grid;place-items:center}
+
+/* shop till */
+body.pos-mode .hdr,body.pos-mode #bnav{display:none!important}
+.pos{background:var(--surface-2);min-height:100vh}
+.pos-h{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:12px 24px;background:var(--brand);color:#fff}
+.pos-brand{display:flex;align-items:center;gap:10px}.pos-brand i{background:var(--cta);color:#000;font-style:normal;font-weight:700;border-radius:8px;padding:8px 9px;font-size:14px}
+.pos-brand b{display:block;font-size:19px}.pos-brand small{opacity:.85;font-size:13px}
+.pos-nav{display:flex;gap:10px}.pos-who{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pos-who span{font-weight:700}
+.pos-h .btn{background:#fff;color:#000}
+.pos-main{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:18px;padding:18px 24px;align-items:start}
+.pos-tools{display:grid;gap:10px;margin-bottom:14px;position:sticky;top:0;background:var(--surface-2);padding-bottom:8px;z-index:2}
+.pos-tools input{width:100%;height:50px;font-size:18px}
+.pos-prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.pt{display:grid;gap:4px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px;font-family:inherit;color:inherit;cursor:pointer;align-content:start}
+.pt:hover:not(:disabled){border-color:var(--cta);box-shadow:0 0 0 2px var(--cta-soft)}
+.pt.out{opacity:.5;cursor:not-allowed}
+.pt b{font-size:15px;line-height:1.25;min-height:2.5em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pt .num{font-weight:700;font-size:16px}.pt small{color:var(--muted)}
+.pt-img{aspect-ratio:1/1;border-radius:8px;overflow:hidden;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 15%,#fff)}
+.pt-img img{width:100%;height:100%;object-fit:cover}.pt-img svg{width:45%;stroke:var(--c);fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.pos-right{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+.pos-right h2{font-size:22px;margin-bottom:10px}
+.pos-right label{display:block;font-weight:700;margin:10px 0 4px;font-size:15px}.pos-right input[type=text],.pos-right input[type=tel],.pos-right input[type=number]{width:100%}
+.pos-lines{display:grid;gap:8px;margin-bottom:12px}
+.pl{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:8px}
+.pl small{display:block;color:var(--muted)}
+.pl .x{width:34px;height:34px}
+.pos-sum{display:grid;gap:8px;border-top:2px solid var(--line);padding-top:10px}
+.pos-sum>div{display:flex;justify-content:space-between;align-items:center}
+.pos-dr label{margin:0}.pos-dr span{display:flex;gap:6px}.pos-dr input{width:110px!important}
+.pos-tot{font-size:22px;font-weight:700;background:var(--cta-soft);border-radius:10px;padding:10px 12px}
+.pos-pay{display:flex;gap:10px;margin:14px 0 4px}.pos-pay .chip{flex:1;height:46px;font-size:16px}
+.pos-quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pos-change{font-size:20px;font-weight:700;margin-top:10px;min-height:28px;color:#8a1010}.pos-change.good{color:#0b5d1e}
+.pos-done{width:100%;height:56px;font-size:19px;margin-top:14px}
+.pos-today{padding:18px 24px;max-width:900px}.pos-today h2{margin-bottom:12px}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.sg>div{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}.sg span{display:block;color:var(--muted);font-size:14px}.sg b{font-size:21px}
+#aShop .two,#aStaff .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}#aShop .two>div{min-width:0;overflow-x:auto}
+#aShop h3,#aStaff h3{font-size:18px;margin:8px 0}
+#aShop table.a-tab{width:100%}
+#rcptModal{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);display:grid;place-items:center;overflow:auto;padding:16px}
+#rcptModal[hidden]{display:none}
+.rc-box{background:#fff;border-radius:12px;padding:16px;max-height:96vh;overflow:auto}
+#rcpt{width:300px;font-family:"Courier New",monospace;font-size:13px;color:#000;margin:0 auto}
+#rcpt hr{border:0;border-top:1px dashed #000;margin:8px 0}
+#rcpt .r-c{text-align:center}#rcpt .r-r,#rcpt .r-i{display:flex;justify-content:space-between;gap:8px}#rcpt .r-t{font-weight:700;font-size:15px}
+.rc-acts{display:flex;gap:10px;margin-top:14px;justify-content:center}
+@media (max-width:1000px){.pos-main{grid-template-columns:1fr}.pos-right{position:static;max-height:none}#aShop .two,#aStaff .two{grid-template-columns:1fr}}
+@media print{
+  @page{size:80mm auto;margin:3mm}
+  body.printing>*{display:none!important}
+  body.printing>#rcptModal{display:block!important;position:static;background:none;padding:0}
+  body.printing .rc-box{padding:0;max-height:none;overflow:visible}
+  body.printing .rc-acts{display:none!important}
+  body.printing #rcpt{width:100%}
+}
 </style>
 </head>
 <body>
@@ -1032,7 +1089,7 @@ function accountView(body){
     body.innerHTML='<div class="opt" style="cursor:default;display:block"><b style="font-size:18px">'+esc(a.name)+'</b><span class="num">'+esc(a.phone)+(a.email?' · '+esc(a.email):'')+'</span></div>'+
      '<h3 style="font-size:17px;margin:16px 0 10px">Saved delivery details</h3><form id="addrForm"><div class="field"><label for="ad-county">County</label><select id="ad-county">'+Object.keys(COUNTIES).map(function(c){return '<option'+(c===(a.county||'Nairobi')?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div>'+
      '<div class="field"><label for="ad-address">Town, estate and landmark</label><textarea id="ad-address" rows="2" placeholder="e.g. Chuka town, near the main stage">'+esc(a.address||'')+'</textarea></div><button class="btn primary" type="submit" style="width:100%">Save details</button></form>'+
-     (isAdmin&&DB?'<button class="btn primary" style="width:100%;margin-top:10px" data-adminopen="1">Open admin panel</button>':'')+'<button class="btn" style="width:100%;margin-top:10px" data-tab="orders">View my orders</button><button class="btn" style="width:100%;margin-top:10px" data-signout="1">Sign out</button>'+
+     (isAdmin&&DB?'<button class="btn primary" style="width:100%;margin-top:10px" data-adminopen="1">Open admin panel</button>':'')+(isStaff?'<button class="btn'+(isAdmin?'':' primary')+'" style="width:100%;margin-top:10px" data-tillopen="1">Open the shop till</button>':'')+'<button class="btn" style="width:100%;margin-top:10px" data-tab="orders">View my orders</button><button class="btn" style="width:100%;margin-top:10px" data-signout="1">Sign out</button>'+
      ((window.AIO&&window.AIO.url)?'':'<div class="note" style="margin:16px 0 0">Accounts are kept on this device for now. Accounts that work on every phone arrive with the store backend.</div>');
     return;
   }
@@ -1316,9 +1373,9 @@ if(SBON){
   persist=function(){save('aio_cart',cart);save('aio_wish',wish)};
   me=function(){return prof&&sess?prof:null};
   var loadProfile=function(user){return sb.from('profiles').select('*').eq('id',user.id).single().then(function(r){
-    if(r.error||!r.data){prof=null;sess=null;isAdmin=false;DB=null;ASSETS=null;return}
+    if(r.error||!r.data){prof=null;sess=null;isAdmin=false;isStaff=false;DB=null;ASSETS=null;return}
     var d=r.data;prof={id:d.id,name:d.name||'',phone:d.phone||'',email:d.email||'',county:d.county||'Nairobi',address:d.address||''};
-    sess=d.id;isAdmin=!!d.is_admin;
+    sess=d.id;isAdmin=!!d.is_admin;isStaff=!!d.is_staff||isAdmin;
     if(isAdmin){DB={sb:1};ASSETS=assetsShim;loadProducts()}else{DB=null;ASSETS=null}
     fillFromAccount(prof);
   })};
@@ -1381,7 +1438,7 @@ if(SBON){
   };
   /* sign out */
   document.addEventListener('click',function(e){
-    if(e.target.closest('[data-signout],[data-a="signout"]')){sb.auth.signOut().then(function(){prof=null;sess=null;isAdmin=false;DB=null;ASSETS=null;orders=[];AO=[];ADM=false;try{sessionStorage.removeItem('aio_adm')}catch(x){}loadProducts();refreshAcct();route();drawPanel()})}
+    if(e.target.closest('[data-signout],[data-a="signout"]')){sb.auth.signOut().then(function(){prof=null;sess=null;isAdmin=false;isStaff=false;POS.on=false;POS.cart=[];DB=null;ASSETS=null;orders=[];AO=[];ADM=false;try{sessionStorage.removeItem('aio_adm')}catch(x){}loadProducts();refreshAcct();route();drawPanel()})}
     if(e.target.closest('[data-adminopen]')){adminRedirect()}
   });
   /* admin orders */
@@ -1426,6 +1483,221 @@ if(SBON){
       o.stage=n;o.times=times;toast('Order marked '+STAGES[n][0]);drawAdminOrders();
     });
   });
+  var isStaff=false;
+  /* ===== shop till for staff, and shop reports for the owner ===== */
+  var POS={on:false,cart:[],q:'',cat:'all',pay:'cash',dtype:'kes',sent:false,tab:'sell',sales:[],busy:false,built:false,range:'today'};
+  var SS=[],ADMTAB='products';
+  var posOk=function(){return accessKnown&&isStaff&&!!me()};
+  var posOpen=function(){if(!posOk())return false;POS.on=true;ADM=false;closePanel();try{sessionStorage.setItem('aio_pos','1')}catch(x){}route();return true};
+  var _ar=adminRedirect;adminRedirect=function(){if(isStaff&&!isAdmin)return posOpen();return _ar()};
+  var _aa=autoAdmin;autoAdmin=function(){if(isStaff&&!isAdmin){var seen=false;try{seen=!!sessionStorage.getItem('aio_pos')}catch(x){}if(!seen)posOpen();return}_aa()};
+  var _route=route;route=function(){
+    var v=$('#posView');
+    if(POS.on&&!posOk())POS.on=false;
+    if(POS.on){ADM=false;$('#top').hidden=true;$('#adminView').hidden=true;document.body.classList.remove('admin-mode');document.body.classList.add('pos-mode');v.hidden=false;drawPOS();window.scrollTo(0,0);return}
+    document.body.classList.remove('pos-mode');v.hidden=true;_route();
+  };
+  var _lp=loadProducts;loadProducts=function(){return _lp().then(function(){if(POS.on&&POS.built){drawPosGrid();drawPosCart()}})};
+
+  /* page furniture */
+  (function(){
+    var sec=document.createElement('section');sec.id='posView';sec.hidden=true;sec.className='pos';
+    document.body.insertBefore(sec,$('#bnav'));
+    var rc=document.createElement('div');rc.id='rcptModal';rc.hidden=true;document.body.appendChild(rc);
+    var tabs=$('#aTabs');
+    if(tabs){tabs.insertAdjacentHTML('beforeend','<button class="chip" data-atab="shop" aria-pressed="false">Shop sales</button><button class="chip" data-atab="staff" aria-pressed="false">Staff</button>');
+      $('#aOrders').insertAdjacentHTML('afterend','<div id="aShop" hidden></div><div id="aStaff" hidden></div>')}
+    var ac=$('#adminView .a-acts');if(ac)ac.insertAdjacentHTML('afterbegin','<button class="btn" data-a="till">Open the till</button>');
+  })();
+
+  var posSub=function(){return POS.cart.reduce(function(a,l){var p=byId(l.id);return a+(p?p.price*l.q:0)},0)};
+  var posDisc=function(){var el=$('#pDisc'),v=el?(+el.value||0):0;if(v<0)v=0;var s=posSub();var d=POS.dtype==='pct'?Math.round(s*Math.min(v,100)/100):Math.round(v);return Math.max(0,Math.min(d,s))};
+  var posTotal=function(){return posSub()-posDisc()};
+
+  function drawPOS(){
+    var v=$('#posView');
+    if(!POS.built){
+      v.innerHTML=
+       '<header class="pos-h"><div class="pos-brand"><i>AIO</i><div><b>All In One Store</b><small>Shop till &middot; Main shop</small></div></div>'+
+       '<nav class="pos-nav"><button class="chip" data-pos="tab-sell" aria-pressed="true">Sell</button><button class="chip" data-pos="tab-today" aria-pressed="false">Today&rsquo;s sales</button></nav>'+
+       '<div class="pos-who"><span id="posWho"></span>'+(isAdmin?'<button class="btn sm" data-a="admin-from-till">Admin</button>':'')+'<button class="btn sm" data-pos="store">View store</button><button class="btn sm" data-signout="1">Sign out</button></div></header>'+
+       '<div id="posSell" class="pos-main"><div class="pos-left"><div class="pos-tools"><input type="text" id="pSearch" placeholder="Search products" autocomplete="off" aria-label="Search products"><div class="chips" id="pCats"></div></div><div class="pos-prods" id="pProds"></div></div>'+
+       '<aside class="pos-right"><h2>Current sale</h2><div id="pLines" class="pos-lines"></div>'+
+       '<div class="pos-sum"><div><span>Subtotal</span><b class="num" id="pSub">KES 0</b></div>'+
+       '<div class="pos-dr"><label for="pDisc">Discount</label><span><input type="number" id="pDisc" min="0" step="1" inputmode="numeric" placeholder="0"><select id="pDtype" aria-label="Discount type"><option value="kes">KES</option><option value="pct">%</option></select></span></div>'+
+       '<div class="pos-tot"><span>Total</span><b class="num" id="pTotal">KES 0</b></div></div>'+
+       '<div class="pos-pay" role="group" aria-label="Payment method"><button class="chip" data-pos="pay-cash" aria-pressed="true">Cash</button><button class="chip" data-pos="pay-mpesa" aria-pressed="false">M-Pesa</button></div>'+
+       '<div id="pCashBox"><label for="pCash">Cash received (KES)</label><input type="number" id="pCash" min="0" step="1" inputmode="numeric"><div class="pos-quick"><button class="btn sm" data-pos="exact">Exact</button><button class="btn sm" data-pos="q500">500</button><button class="btn sm" data-pos="q1000">1,000</button><button class="btn sm" data-pos="q2000">2,000</button><button class="btn sm" data-pos="q5000">5,000</button></div><div class="pos-change" id="pChange"></div></div>'+
+       '<div id="pMpBox" hidden><label for="pPhone">Customer phone</label><input type="tel" id="pPhone" placeholder="07XX XXX XXX" inputmode="tel" autocomplete="off"><button class="btn" data-pos="prompt" style="margin-top:8px;width:100%">Send M-Pesa prompt</button><div class="note" id="pSent" style="margin-top:8px" hidden></div><label for="pCode" style="margin-top:10px;display:block">M-Pesa confirmation code</label><input type="text" id="pCode" placeholder="e.g. SJK4X9ABCD" autocomplete="off" style="text-transform:uppercase"></div>'+
+       '<label for="pNote" style="margin-top:10px;display:block">Note (optional)</label><input type="text" id="pNote" maxlength="120" autocomplete="off">'+
+       '<div class="err" id="pErr" role="alert"></div>'+
+       '<button class="btn primary pos-done" id="pDone" data-pos="done">Complete sale</button><button class="btn" data-pos="clear" style="width:100%;margin-top:8px">Clear sale</button></aside></div>'+
+       '<div id="posToday" class="pos-today" hidden></div>';
+      POS.built=true;
+    }
+    $('#posWho').textContent=(me()&&me().name||'')+(isAdmin?' (owner)':'');
+    $$('[data-pos^="tab-"]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.pos==='tab-'+POS.tab))});
+    $('#posSell').hidden=POS.tab!=='sell';$('#posToday').hidden=POS.tab!=='today';
+    $('#pCats').innerHTML=['<button class="chip" data-pcat="all" aria-pressed="'+(POS.cat==='all')+'">All</button>'].concat(CATS.map(function(c){return '<button class="chip" data-pcat="'+c.id+'" aria-pressed="'+(POS.cat===c.id)+'">'+esc(c.name)+'</button>'})).join('');
+    drawPosGrid();drawPosCart();
+    if(POS.tab==='today')drawPosToday();
+  }
+  function drawPosGrid(){
+    var q=POS.q.trim().toLowerCase();
+    var l=P.filter(function(p){return !p.hidden&&(POS.cat==='all'||p.cat===POS.cat)&&(!q||p.name.toLowerCase().indexOf(q)>-1||String(p.id)===q)}).sort(function(a,b){return a.name.localeCompare(b.name)});
+    $('#pProds').innerHTML=l.length?l.map(function(p){var c=CAT[p.cat];
+      return '<button class="pt'+(p.stock<1?' out':'')+'" data-pos="add" data-id="'+p.id+'"'+(p.stock<1?' disabled':'')+'><span class="pt-img" style="--c:'+c.c+'">'+(psrc(p)?'<img alt="" loading="lazy" src="'+psrc(p)+'">':'<svg viewBox="0 0 24 24">'+c.ic+'</svg>')+'</span><b>'+esc(p.name)+'</b><span class="num">'+kes(p.price)+'</span><small>'+(p.stock<1?'Sold out':p.stock+' in stock')+'</small></button>'}).join(''):'<div class="empty">No products match.</div>';
+  }
+  function drawPosCart(){
+    $('#pLines').innerHTML=POS.cart.length?POS.cart.map(function(l){var p=byId(l.id);if(!p)return '';
+      return '<div class="pl"><div><b>'+esc(p.name)+'</b><small class="num">'+kes(p.price)+' each</small></div><div class="qty"><button data-pos="dec" data-id="'+l.id+'" aria-label="Fewer">&minus;</button><span class="num">'+l.q+'</span><button data-pos="inc" data-id="'+l.id+'" aria-label="More">+</button></div><b class="num">'+kes(p.price*l.q)+'</b><button class="x" data-pos="rm" data-id="'+l.id+'" aria-label="Remove '+esc(p.name)+'"><svg viewBox="0 0 24 24"><path d="M5 5l14 14M19 5L5 19"/></svg></button></div>'}).join(''):'<div class="note">Tap a product to add it to the sale.</div>';
+    posCalc();
+  }
+  function posCalc(){
+    var s=posSub(),d=posDisc(),t=s-d;
+    $('#pSub').textContent=kes(s);$('#pTotal').textContent=kes(t);
+    var ch=$('#pChange');
+    if(POS.pay==='cash'){var c=Math.round(+$('#pCash').value||0);ch.className='pos-change'+(c>=t&&t>0?' good':'');ch.textContent=!c?'':(c>=t?'Change to give: '+kes(c-t):'Short by '+kes(t-c))}
+    var b=$('#pDone');b.disabled=!POS.cart.length||POS.busy;b.textContent=POS.busy?'Saving.':'Complete sale'+(POS.cart.length?' · '+kes(t):'');
+  }
+  function posAdd(id){var p=byId(id);if(!p)return;var l=POS.cart.filter(function(x){return x.id===id})[0];
+    if(l){if(l.q+1>p.stock)return toast('Only '+p.stock+' in stock');l.q++}else{if(p.stock<1)return;POS.cart.push({id:id,q:1})}
+    drawPosCart()}
+  function posReset(){POS.cart=[];POS.sent=false;['pDisc','pCash','pPhone','pCode','pNote'].forEach(function(i){var e=$('#'+i);if(e)e.value=''});$('#pSent').hidden=true;$('#pErr').textContent='';drawPosCart()}
+  async function posComplete(){
+    if(POS.busy)return;var err=$('#pErr');err.textContent='';
+    if(!POS.cart.length){err.textContent='Add at least one product.';return}
+    var total=posTotal(),cash=0,code='',phone=($('#pPhone').value||'').trim();
+    if(POS.pay==='cash'){cash=Math.round(+$('#pCash').value||0);if(cash<total){err.textContent='Cash received is less than the total.';return}}
+    else{code=($('#pCode').value||'').trim();if(code.length<6){err.textContent='Enter the M-Pesa confirmation code from the customer’s message.';return}}
+    POS.busy=true;posCalc();
+    var r=await sb.rpc('record_shop_sale',{p_items:POS.cart.map(function(l){return {id:l.id,q:l.q}}),p_discount:posDisc(),p_pay:POS.pay,p_cash:POS.pay==='cash'?cash:null,p_phone:phone,p_code:code,p_note:$('#pNote').value||'',p_branch:'main'});
+    POS.busy=false;
+    if(r.error){err.textContent=r.error.message||'Could not record the sale.';await loadProducts();posCalc();return}
+    var sale=r.data;posReset();await loadProducts();showReceipt(sale);
+  }
+  function showReceipt(s){
+    var m=$('#rcptModal'),dt=new Date(s.created_at).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'});
+    m.innerHTML='<div class="rc-box"><div id="rcpt"><div class="r-c"><b>ALL IN ONE STORE</b><br>Main shop<br>Tel '+esc(STORE_PHONE_DISPLAY)+'</div><hr>'+
+     '<div class="r-r"><span>Receipt</span><span>'+esc(s.id)+'</span></div><div class="r-r"><span>Date</span><span>'+esc(dt)+'</span></div><div class="r-r"><span>Served by</span><span>'+esc(s.staff_name||'')+'</span></div><hr>'+
+     s.items.map(function(i){return '<div class="r-i"><span>'+i.q+' x '+esc(i.name)+'</span><span>'+Number(i.price*i.q).toLocaleString('en-KE')+'</span></div>'}).join('')+'<hr>'+
+     '<div class="r-r"><span>Subtotal</span><span>'+Number(s.subtotal).toLocaleString('en-KE')+'</span></div>'+
+     (s.discount?'<div class="r-r"><span>Discount</span><span>-'+Number(s.discount).toLocaleString('en-KE')+'</span></div>':'')+
+     '<div class="r-r r-t"><span>TOTAL (KES)</span><span>'+Number(s.total).toLocaleString('en-KE')+'</span></div><hr>'+
+     (s.pay==='cash'?'<div class="r-r"><span>Paid by</span><span>Cash</span></div><div class="r-r"><span>Cash received</span><span>'+Number(s.cash_given).toLocaleString('en-KE')+'</span></div><div class="r-r"><span>Change</span><span>'+Number(s.change_given).toLocaleString('en-KE')+'</span></div>':'<div class="r-r"><span>Paid by</span><span>M-Pesa</span></div><div class="r-r"><span>Code</span><span>'+esc(s.mpesa_code||'')+'</span></div>')+
+     (s.status==='void'?'<div class="r-c"><b>VOIDED</b></div>':'')+'<hr><div class="r-c">Thank you for shopping with us</div></div>'+
+     '<div class="rc-acts"><button class="btn primary" data-pos="print">Print receipt</button><button class="btn" data-pos="rc-close">Close</button></div></div>';
+    m.hidden=false;
+  }
+  function posToday(){
+    var d=new Date();d.setHours(0,0,0,0);
+    return sb.from('shop_sales').select('*').eq('staff_id',sess).gte('created_at',d.toISOString()).order('created_at',{ascending:false}).then(function(r){POS.sales=r.data||[];drawPosToday()});
+  }
+  function drawPosToday(){
+    var box=$('#posToday');if(!box)return;var paid=POS.sales.filter(function(s){return s.status==='paid'});
+    var sum=function(f){return paid.filter(f).reduce(function(a,s){return a+s.total},0)};
+    box.innerHTML='<h2>Your sales today</h2><div class="sg"><div><span>Total sold</span><b class="num">'+kes(sum(function(){return true}))+'</b></div><div><span>Sales</span><b class="num">'+paid.length+'</b></div><div><span>Cash</span><b class="num">'+kes(sum(function(s){return s.pay==='cash'}))+'</b></div><div><span>M-Pesa</span><b class="num">'+kes(sum(function(s){return s.pay==='mpesa'}))+'</b></div></div>'+
+     (POS.sales.length?POS.sales.map(function(s,i){return '<div class="ao"><div class="ao-h"><b class="num">'+esc(s.id)+(s.status==='void'?' (voided)':'')+'</b><span class="num">'+kes(s.total)+'</span></div><div class="ao-b">'+new Date(s.created_at).toLocaleTimeString('en-KE',{timeStyle:'short'})+' · '+(s.pay==='cash'?'Cash':'M-Pesa')+'<br>'+s.items.map(function(x){return esc(x.q+' x '+x.name)}).join('<br>')+'</div><button class="btn sm" data-pos="reprint" data-i="'+i+'">View / print receipt</button></div>'}).join(''):'<div class="note">No sales yet today.</div>');
+  }
+
+  /* till clicks and typing */
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('[data-pos],[data-pcat],[data-tillopen],[data-a="till"],[data-a="admin-from-till"]');if(!t)return;
+    if(t.dataset.tillopen||t.dataset.a==='till'){posOpen();return}
+    if(t.dataset.a==='admin-from-till'){POS.on=false;adminRedirect();return}
+    if(t.dataset.pcat){POS.cat=t.dataset.pcat;drawPOS();return}
+    var a=t.dataset.pos,id=+t.dataset.id;
+    if(a==='add')posAdd(id);
+    else if(a==='inc')posAdd(id);
+    else if(a==='dec'){var l=POS.cart.filter(function(x){return x.id===id})[0];if(l){l.q--;if(l.q<1)POS.cart=POS.cart.filter(function(x){return x!==l})}drawPosCart()}
+    else if(a==='rm'){POS.cart=POS.cart.filter(function(x){return x.id!==id});drawPosCart()}
+    else if(a==='clear')posReset();
+    else if(a==='pay-cash'||a==='pay-mpesa'){POS.pay=a==='pay-cash'?'cash':'mpesa';$$('[data-pos^="pay-"]').forEach(function(b){b.setAttribute('aria-pressed',String(b===t))});$('#pCashBox').hidden=POS.pay!=='cash';$('#pMpBox').hidden=POS.pay!=='mpesa';posCalc()}
+    else if(a==='exact'){$('#pCash').value=posTotal();posCalc()}
+    else if(/^q\d+$/.test(a||'')){$('#pCash').value=a.slice(1);posCalc()}
+    else if(a==='prompt'){var ph=($('#pPhone').value||'').replace(/\s/g,'');if(!/^(?:\+?254|0)?[71]\d{8}$/.test(ph)){$('#pErr').textContent='Enter the customer’s Safaricom number first.';return}
+      $('#pErr').textContent='';var s=$('#pSent');s.hidden=false;s.textContent='Prompt for '+kes(posTotal())+' sent to '+ph+'. Demo mode: real prompts start once the shop’s Till is connected to M-Pesa. For now, type the confirmation code from the customer’s M-Pesa message below.'}
+    else if(a==='done')posComplete();
+    else if(a==='tab-sell'||a==='tab-today'){POS.tab=a==='tab-sell'?'sell':'today';drawPOS();if(POS.tab==='today')posToday()}
+    else if(a==='store'){POS.on=false;route()}
+    else if(a==='print'){document.body.classList.add('printing');window.print();setTimeout(function(){document.body.classList.remove('printing')},500)}
+    else if(a==='rc-close'){$('#rcptModal').hidden=true}
+    else if(a==='reprint'){showReceipt(POS.sales[+t.dataset.i])}
+  });
+  document.addEventListener('input',function(e){
+    var i=e.target.id;if(!i)return;
+    if(i==='pSearch'){POS.q=e.target.value;drawPosGrid()}
+    else if(i==='pDisc'||i==='pCash')posCalc();
+  });
+  document.addEventListener('change',function(e){if(e.target.id==='pDtype'){POS.dtype=e.target.value;posCalc()}});
+  document.addEventListener('keydown',function(e){
+    if(!POS.on)return;
+    if(e.key==='Enter'&&e.target.id==='pSearch'){var q=POS.q.trim().toLowerCase();var l=P.filter(function(p){return !p.hidden&&p.stock>0&&(p.name.toLowerCase().indexOf(q)>-1||String(p.id)===q)});if(q&&l.length===1){posAdd(l[0].id);e.target.value='';POS.q='';drawPosGrid()}}
+    if(e.key==='Escape'&&!$('#rcptModal').hidden)$('#rcptModal').hidden=true;
+  });
+
+  /* owner: shop sales report */
+  var rangeStart=function(r){var d=new Date();d.setHours(0,0,0,0);if(r==='7')d.setDate(d.getDate()-6);else if(r==='30')d.setDate(d.getDate()-29);else if(r==='all')return 0;return d.getTime()};
+  function loadShopSales(){if(!isAdmin)return Promise.resolve();
+    return sb.from('shop_sales').select('*').order('created_at',{ascending:false}).limit(2000).then(function(r){
+      if(r.error){$('#aShop').innerHTML='<div class="note">Could not load shop sales: '+esc(r.error.message||'try again')+'</div>';return}
+      SS=r.data||[];drawShop()})}
+  function drawShop(){
+    var box=$('#aShop');if(!box)return;var st=rangeStart(POS.range);
+    var rows=SS.filter(function(s){return Date.parse(s.created_at)>=st}),paid=rows.filter(function(s){return s.status==='paid'});
+    var sum=function(l,f){return l.reduce(function(a,s){return a+f(s)},0)};
+    var tot=sum(paid,function(s){return s.total}),cash=sum(paid.filter(function(s){return s.pay==='cash'}),function(s){return s.total}),mp=tot-cash,disc=sum(paid,function(s){return s.discount});
+    var onl=AO.filter(function(o){return o.created>=st});
+    var byW={},byP={};
+    paid.forEach(function(s){var w=byW[s.staff_name||'Staff']=byW[s.staff_name||'Staff']||{n:0,t:0};w.n++;w.t+=s.total;
+      s.items.forEach(function(i){var p=byP[i.name]=byP[i.name]||{q:0,v:0};p.q+=i.q;p.v+=i.q*i.price})});
+    var rs=[['today','Today'],['7','Last 7 days'],['30','Last 30 days'],['all','All time']];
+    box.innerHTML='<div class="chips" style="margin-bottom:16px;gap:12px">'+rs.map(function(r){return '<button class="chip" data-range="'+r[0]+'" aria-pressed="'+(POS.range===r[0])+'">'+r[1]+'</button>'}).join('')+'<button class="btn sm" data-shopcsv="1" style="margin-left:auto">Download CSV</button><button class="btn sm" data-shoprefresh="1">Refresh</button></div>'+
+     '<div class="sg"><div><span>Shop sales</span><b class="num">'+kes(tot)+'</b></div><div><span>Number of sales</span><b class="num">'+paid.length+'</b></div><div><span>Cash</span><b class="num">'+kes(cash)+'</b></div><div><span>M-Pesa</span><b class="num">'+kes(mp)+'</b></div><div><span>Discounts given</span><b class="num">'+kes(disc)+'</b></div><div><span>Online orders</span><b class="num">'+onl.length+' &middot; '+kes(sum(onl,function(o){return o.total}))+'</b></div></div>'+
+     '<div class="two"><div><h3>By worker</h3>'+tbl(['Worker','Sales','Total'],Object.keys(byW).sort(function(a,b){return byW[b].t-byW[a].t}).map(function(k){return [esc(k),byW[k].n,kes(byW[k].t)]}))+'</div>'+
+     '<div><h3>Top products (before discounts)</h3>'+tbl(['Product','Sold','Value'],Object.keys(byP).sort(function(a,b){return byP[b].v-byP[a].v}).slice(0,10).map(function(k){return [esc(k),byP[k].q,kes(byP[k].v)]}))+'</div></div>'+
+     '<h3 style="margin-top:20px">Every sale</h3>'+(rows.length?rows.map(function(s){return '<div class="ao"><div class="ao-h"><b class="num">'+esc(s.id)+(s.status==='void'?' (voided)':'')+'</b><span class="num">'+kes(s.total)+'</span></div><div class="ao-b">'+esc(s.staff_name||'')+' · '+new Date(s.created_at).toLocaleString('en-KE',{dateStyle:'medium',timeStyle:'short'})+' · '+(s.pay==='cash'?'Cash':'M-Pesa '+esc(s.mpesa_code||''))+(s.discount?' · Discount '+kes(s.discount):'')+'<br>'+s.items.map(function(x){return esc(x.q+' x '+x.name)}).join('<br>')+(s.note?'<br><i>'+esc(s.note)+'</i>':'')+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button class="btn sm" data-shoprc="'+esc(s.id)+'">Receipt</button>'+(s.status==='paid'?'<button class="btn sm danger" data-shopvoid="'+esc(s.id)+'">Cancel sale</button>':'')+'</div></div>'}).join(''):'<div class="note">No shop sales in this period.</div>');
+  }
+  function tbl(h,rows){return rows.length?'<table class="a-tab"><thead><tr>'+h.map(function(x){return '<th>'+x+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>':'<div class="note">Nothing yet.</div>'}
+  $('#aShop').addEventListener('click',function(e){
+    var t=e.target.closest('[data-range],[data-shopcsv],[data-shoprefresh],[data-shoprc],[data-shopvoid]');if(!t)return;
+    if(t.dataset.range){POS.range=t.dataset.range;drawShop()}
+    else if(t.dataset.shoprefresh)loadShopSales();
+    else if(t.dataset.shoprc){var s=SS.filter(function(x){return x.id===t.dataset.shoprc})[0];if(s)showReceipt(s)}
+    else if(t.dataset.shopvoid){if(!window.confirm('Cancel sale '+t.dataset.shopvoid+'? The items go back into stock.'))return;
+      sb.rpc('void_shop_sale',{p_id:t.dataset.shopvoid}).then(function(r){if(r.error||!r.data){toast('Could not cancel that sale.');return}toast('Sale cancelled');loadProducts();loadShopSales()})}
+    else if(t.dataset.shopcsv){var st=rangeStart(POS.range),l=SS.filter(function(s){return Date.parse(s.created_at)>=st});
+      var q=function(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'};
+      var csv=['Receipt,Date,Worker,Pay,Code,Subtotal,Discount,Total,Status,Items'].concat(l.map(function(s){return [s.id,s.created_at,s.staff_name,s.pay,s.mpesa_code,s.subtotal,s.discount,s.total,s.status,s.items.map(function(i){return i.q+' x '+i.name}).join('; ')].map(q).join(',')})).join('\n');
+      var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='shop-sales.csv';document.body.appendChild(a);a.click();a.remove()}
+  });
+
+  /* owner: staff accounts */
+  function loadStaff(){if(!isAdmin)return Promise.resolve();
+    return sb.from('profiles').select('id,name,phone,email,is_staff,is_admin').eq('is_staff',true).then(function(r){
+      var l=r.data||[];
+      $('#aStaff').innerHTML='<h3>Shop workers</h3><p style="max-width:60ch">A worker first creates a normal account on the store (Account, then Create account). Then type their email here to make them a shop worker. When they sign in they go straight to the till.</p>'+
+       '<div class="up" style="margin:12px 0 18px"><input type="text" id="stEmail" placeholder="Worker’s email" autocomplete="off" style="min-width:260px"><button class="btn primary" data-staffadd="1">Make worker</button></div><div class="err" id="stErr" role="alert"></div>'+
+       (l.length?l.map(function(u){return '<div class="ao"><div class="ao-h"><b>'+esc(u.name||'Worker')+'</b>'+(u.is_admin?'<span class="pill">Owner</span>':'')+'</div><div class="ao-b">'+esc(u.email||'')+' · <span class="num">'+esc(u.phone||'')+'</span></div>'+(u.is_admin?'':'<button class="btn sm danger" data-staffrm="'+esc(u.email)+'" style="margin-top:8px">Remove worker access</button>')+'</div>'}).join(''):'<div class="note">No workers yet.</div>')})}
+  $('#aStaff').addEventListener('click',function(e){
+    var t=e.target.closest('[data-staffadd],[data-staffrm]');if(!t)return;var err=$('#stErr');
+    if(t.dataset.staffadd){var em=($('#stEmail').value||'').trim();if(!EMAILRE.test(em)){err.textContent='Enter the worker’s email address.';return}
+      sb.rpc('set_staff',{p_email:em,p_on:true}).then(function(r){if(r.error){err.textContent='Could not do that.';return}if(!r.data){err.textContent='No account found with that email. Ask them to create an account first.';return}toast('Worker added');loadStaff()})}
+    else{sb.rpc('set_staff',{p_email:t.dataset.staffrm,p_on:false}).then(function(r){if(r.error){toast('Could not do that.');return}toast('Worker access removed');loadStaff()})}
+  });
+  showTab=function(t){
+    ADMTAB=t;var prod=t==='products';
+    $$('[data-atab]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.atab===t))});
+    $('#aOrders').hidden=t!=='orders';$('#aShop').hidden=t!=='shop';$('#aStaff').hidden=t!=='staff';
+    ['#aStats','.a-tool','.a-wrap'].forEach(function(sel){var el=$(sel,$('#aMain'));if(el)el.hidden=!prod});
+    var tl=$('#aTools');if(tl)tl.style.visibility=prod?'visible':'hidden';
+    if(t==='orders')loadAdminOrders();else if(t==='shop')loadShopSales();else if(t==='staff')loadStaff();
+  };
+  setInterval(function(){
+    if(document.visibilityState!=='visible')return;
+    if(isAdmin&&ADMTAB==='shop'&&!$('#adminView').hidden)loadShopSales();
+    if(POS.on&&POS.tab==='sell'&&!POS.busy)_lp().then(function(){if(POS.on){drawPosGrid();posCalc()}});
+  },20000);
   sbInit=function(){
     P=[];$('#grid').innerHTML='<div class="empty">Loading products.</div>';accessKnown=false;
     loadProducts();
