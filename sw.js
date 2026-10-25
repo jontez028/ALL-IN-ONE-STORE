@@ -1,5 +1,5 @@
 /* All In One Store service worker: pages load fresh when online, and the last copy opens when offline. */
-var V='aio-v1';
+var V='aio-v2';
 self.addEventListener('install',function(e){self.skipWaiting();e.waitUntil(caches.open(V).then(function(c){return c.addAll(['./','index.html','manifest.webmanifest','icons/icon-192.png'])}).catch(function(){}))});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(k){return Promise.all(k.filter(function(n){return n!==V}).map(function(n){return caches.delete(n)}))}).then(function(){return self.clients.claim()}))});
 self.addEventListener('fetch',function(e){

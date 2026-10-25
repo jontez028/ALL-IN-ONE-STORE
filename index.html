@@ -1007,7 +1007,7 @@ function accountView(body){
      '<h3 style="font-size:17px;margin:16px 0 10px">Saved delivery details</h3><form id="addrForm"><div class="field"><label for="ad-county">County</label><select id="ad-county">'+Object.keys(COUNTIES).map(function(c){return '<option'+(c===(a.county||'Nairobi')?' selected':'')+'>'+c+'</option>'}).join('')+'</select></div>'+
      '<div class="field"><label for="ad-address">Town, estate and landmark</label><textarea id="ad-address" rows="2" placeholder="e.g. Chuka town, near the main stage">'+esc(a.address||'')+'</textarea></div><button class="btn primary" type="submit" style="width:100%">Save details</button></form>'+
      (isAdmin&&DB?'<button class="btn primary" style="width:100%;margin-top:10px" data-adminopen="1">Open admin panel</button>':'')+'<button class="btn" style="width:100%;margin-top:10px" data-tab="orders">View my orders</button><button class="btn" style="width:100%;margin-top:10px" data-signout="1">Sign out</button>'+
-     '<div class="note" style="margin:16px 0 0">Accounts are kept on this device for now. Accounts that work on every phone arrive with the store backend.</div>';
+     ((window.AIO&&window.AIO.url)?'':'<div class="note" style="margin:16px 0 0">Accounts are kept on this device for now. Accounts that work on every phone arrive with the store backend.</div>');
     return;
   }
   var EM=!!(window.AIO&&window.AIO.url);
@@ -1026,7 +1026,7 @@ function accountView(body){
    (su?'<div class="field"><label for="u-pw2">Confirm password</label><input id="u-pw2" type="password" autocomplete="new-password"></div>':'')+
    '<div class="form-err" role="alert">'+esc(ui.authErr)+'</div>'+
    '<button class="btn primary" type="submit" style="width:100%">'+(su?'Create my account':'Sign in')+'</button></form>'+
-   (EM?'':'<div class="note" style="margin:16px 0 0">Accounts are kept on this device for now. Accounts that work on every phone arrive with the store backend.</div>');
+   (EM?'':((window.AIO&&window.AIO.url)?'':'<div class="note" style="margin:16px 0 0">Accounts are kept on this device for now. Accounts that work on every phone arrive with the store backend.</div>'));
 }
 
 /* live catalogue and admin */
