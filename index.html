@@ -495,6 +495,10 @@ body.pos-mode .hdr,body.pos-mode #bnav{display:none!important}
   body.printing .rc-acts{display:none!important}
   body.printing #rcpt{width:100%}
 }
+
+.linkbtn{background:none;border:0;color:var(--brand);font:inherit;text-decoration:underline;padding:12px 0;min-height:44px;cursor:pointer;width:100%;text-align:center}
+.legal-links{display:flex;gap:18px}.legal-links a{color:var(--brand);text-decoration:underline;padding:6px 0;font-weight:700}
+.rate a{color:var(--brand);text-decoration:underline}
 </style>
 </head>
 <body>
@@ -563,6 +567,7 @@ body.pos-mode .hdr,body.pos-mode #bnav{display:none!important}
   <footer>
     <span>All In One Store. Household items, clothes, electrical appliances, phones, laptops and tablets.</span>
     <span class="num">Support: <b id="footPhone"></b></span>
+    <span class="legal-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="returns.html">Returns</a></span>
   </footer>
 </main>
 
@@ -991,7 +996,7 @@ document.addEventListener('click',function(e){
   if(d.rm){setQty(+d.rm,0);return}
   if(d.step){stepTo(d.step);return}
   if(d.signout){sess=null;ADM=false;try{sessionStorage.removeItem('aio_adm')}catch(x){}save('aio_sess',null);ui.step='cart';refreshAcct();drawPanel();toast('Signed out');return}
-  if(d.authmode){ui.authMode=d.authmode;ui.authErr='';ui.pendingEmail=null;drawPanel();return}
+  if(d.authmode){ui.authMode=d.authmode;ui.authErr='';ui.pendingEmail=null;ui.resetSent=null;drawPanel();return}
   if(d.track){ui.tab='orders';ui.sel=d.track;drawPanel();return}
   if(d.sel){ui.sel=d.sel;ui.trkErr='';drawPanel();return}
   if(d.copy){var ok=function(){toast('Number copied')};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(d.copy).then(ok,function(){toast('Select the number to copy it')})}else toast('Select the number to copy it');return}
@@ -1084,6 +1089,10 @@ function authSubmit(){
 }
 function saveAddr(){var a=me();if(!a)return;a.county=$('#ad-county').value;a.address=$('#ad-address').value.trim();save('aio_accts',accts);fillFromAccount(a);toast('Delivery details saved')}
 function accountView(body){
+  if(ui.authMode==='reset'&&RECOV){
+    body.innerHTML='<h3 style="font-size:20px;margin-bottom:6px">Choose a new password</h3><p style="color:var(--muted)">Use at least 8 characters.</p><form id="authForm" novalidate><div class="field"><label for="u-pw">New password</label><input id="u-pw" type="password" autocomplete="new-password"></div><div class="field"><label for="u-pw2">Confirm new password</label><input id="u-pw2" type="password" autocomplete="new-password"></div><div class="form-err" role="alert">'+esc(ui.authErr)+'</div><button class="btn primary" type="submit" style="width:100%">Save new password</button></form>';
+    return;
+  }
   var a=me();
   if(a){
     body.innerHTML='<div class="opt" style="cursor:default;display:block"><b style="font-size:18px">'+esc(a.name)+'</b><span class="num">'+esc(a.phone)+(a.email?' · '+esc(a.email):'')+'</span></div>'+
@@ -1098,6 +1107,11 @@ function accountView(body){
     body.innerHTML='<div class="center"><div class="ok"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg></div><h3 style="font-size:21px">Check your email</h3><p style="color:var(--muted)">We sent a confirmation link to <b>'+esc(ui.pendingEmail)+'</b>. Open the email on any device and tap the link to finish creating your account. Look in spam if you do not see it.</p><button class="btn" data-resend="1" style="width:100%">Send the email again</button><button class="btn primary" data-authmode="signin" style="width:100%;margin-top:8px">I confirmed my email, sign in</button></div>';
     return;
   }
+  if(EM&&ui.authMode==='forgot'){
+    if(ui.resetSent){body.innerHTML='<div class="center"><div class="ok"><svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg></div><h3 style="font-size:21px">Check your email</h3><p style="color:var(--muted)">If there is an account for <b>'+esc(ui.resetSent)+'</b>, we sent a link to reset the password. It can take a few minutes. Look in your Spam folder too.</p></div><button class="btn" data-authmode="signin" style="width:100%">Back to sign in</button>';return}
+    body.innerHTML='<h3 style="font-size:20px;margin-bottom:6px">Reset your password</h3><p style="color:var(--muted)">Enter the email you signed up with and we will send you a link.</p><form id="authForm" novalidate><div class="field"><label for="u-email">Email</label><input id="u-email" type="email" autocomplete="email"></div><div class="form-err" role="alert">'+esc(ui.authErr)+'</div><button class="btn primary" type="submit" style="width:100%">Send reset link</button></form><button class="btn" data-authmode="signin" style="width:100%;margin-top:10px">Back to sign in</button>';
+    return;
+  }
   var su=ui.authMode==='signup';
   body.innerHTML=(ui.after==='checkout'?'<div class="note" style="background:var(--cta-soft);color:var(--ink)">Create an account or sign in to place your order. Your cart is saved.</div>':'')+
    '<div class="chips" style="margin-bottom:14px"><button class="chip" data-authmode="signup" aria-pressed="'+su+'">Create account</button><button class="chip" data-authmode="signin" aria-pressed="'+!su+'">Sign in</button></div>'+
@@ -1108,7 +1122,7 @@ function accountView(body){
    '<div class="field"><label for="u-pw">Password</label><input id="u-pw" type="password" autocomplete="'+(su?'new-password':'current-password')+'"'+(su?' placeholder="At least 8 characters"':'')+'></div>'+
    (su?'<div class="field"><label for="u-pw2">Confirm password</label><input id="u-pw2" type="password" autocomplete="new-password"></div>':'')+
    '<div class="form-err" role="alert">'+esc(ui.authErr)+'</div>'+
-   '<button class="btn primary" type="submit" style="width:100%">'+(su?'Create my account':'Sign in')+'</button></form>'+
+   (su?'<p class="rate" style="margin:0 0 10px">By creating an account you agree to our <a href="terms.html" target="_blank" rel="noopener">Terms</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>':'')+'<button class="btn primary" type="submit" style="width:100%">'+(su?'Create my account':'Sign in')+'</button></form>'+((EM&&!su)?'<button type="button" class="linkbtn" data-authmode="forgot">Forgot your password?</button>':'')+
    (EM?'':((window.AIO&&window.AIO.url)?'':'<div class="note" style="margin:16px 0 0">Accounts are kept on this device for now. Accounts that work on every phone arrive with the store backend.</div>'));
 }
 
@@ -1119,10 +1133,11 @@ function docOf(p){return {id:p.id,name:p.name,cat:p.cat,price:p.price,old:p.old|
 function pref(id){return DB.collection('products').doc('p'+id)}
 function errMsg(e){var c=e&&e.code;if(c==='invalid_argument'||c==='not_granted')return 'Only the store owner or an editor can change products.';if(c==='quota_exceeded')return 'The catalogue is full. Delete some products first.';return 'Could not save. Check your connection and try again.'}
 function artAdm(p){return psrc(p)?'<img alt="" src="'+psrc(p)+'">':'<svg viewBox="0 0 24 24">'+CAT[p.cat].ic+'</svg>'}
+var RECOV=/type=recovery/.test(location.hash);
 var ADM=false;
 function adminOn(){return ADM}
 function adminOk(){return accessKnown&&isAdmin&&!!DB&&!!me()}
-function adminRedirect(){if(adminOk()){ADM=true;closePanel();try{sessionStorage.setItem('aio_adm','1')}catch(x){}route();return true}return false}
+function adminRedirect(){if(!RECOV&&adminOk()){ADM=true;closePanel();try{sessionStorage.setItem('aio_adm','1')}catch(x){}route();return true}return false}
 function autoAdmin(){var seen=false;try{seen=!!sessionStorage.getItem('aio_adm')}catch(x){}if(!seen)adminRedirect()}
 function route(){
   if(ADM&&!adminOk())ADM=false;
@@ -1386,9 +1401,28 @@ if(SBON){
   timeLabel=function(o,i){var t=o.times&&o.times[i];return t?new Date(t).toLocaleString('en-KE',{weekday:'short',hour:'2-digit',minute:'2-digit'}):''};
   var afterLogin=function(user){return loadProfile(user).then(loadMyOrders).then(function(){if(!prof)throw 0;return loadAdminOrders()}).then(function(){startSession(prof)})};
   var REDIR=location.origin+location.pathname;
+  if(sb.auth.onAuthStateChange)sb.auth.onAuthStateChange(function(ev){if(ev==='PASSWORD_RECOVERY'){RECOV=true;ui.authMode='reset';ui.authErr='';openPanel('account')}});
   var EMAILRE=/^[^@\s]+@[^@\s]+\.[^@\s]+$/;
   authSubmit=function(){
     var err=function(m){ui.authErr=m;drawPanel()};
+    if(ui.authMode==='forgot'){
+      var fe=($('#u-email').value||'').trim();
+      if(!EMAILRE.test(fe))return err('Enter the email address you signed up with.');
+      return sb.auth.resetPasswordForEmail(fe,{redirectTo:REDIR}).then(function(r){
+        if(r.error&&/rate|429|over_email/i.test((r.error.message||'')+' '+(r.error.code||'')+' '+(r.error.status||'')))return err('Too many emails were sent just now. Wait a few minutes and try again.');
+        ui.resetSent=fe;ui.authErr='';drawPanel();
+      }).catch(function(){err('Could not send the email. Check your connection and try again.')});
+    }
+    if(ui.authMode==='reset'){
+      var p1=$('#u-pw').value,p2=$('#u-pw2').value;
+      if(p1.length<8)return err('Use a password with at least 8 characters.');
+      if(p1!==p2)return err('The two passwords do not match.');
+      return sb.auth.updateUser({password:p1}).then(function(r){
+        if(r.error)return err(/same|different|old/i.test(r.error.message||'')?'Choose a password you have not used before.':'Could not change the password. The link may have expired. Ask for a new one.');
+        RECOV=false;ui.authMode='signin';ui.authErr='';toast('Password changed');
+        return afterLogin(r.data.user);
+      }).catch(function(){err('Could not change the password. Try again.')});
+    }
     var em=$('#u-email').value.trim(),pw=$('#u-pw').value;
     if(ui.authMode==='signup'){
       var nm=$('#u-name').value.trim(),ph=$('#u-phone').value.trim(),pw2=$('#u-pw2').value;
@@ -1488,7 +1522,7 @@ if(SBON){
   var POS={on:false,cart:[],q:'',cat:'all',pay:'cash',dtype:'kes',sent:false,tab:'sell',sales:[],busy:false,built:false,range:'today'};
   var SS=[],ADMTAB='products';
   var posOk=function(){return accessKnown&&isStaff&&!!me()};
-  var posOpen=function(){if(!posOk())return false;POS.on=true;ADM=false;closePanel();try{sessionStorage.setItem('aio_pos','1')}catch(x){}route();return true};
+  var posOpen=function(){if(RECOV||!posOk())return false;POS.on=true;ADM=false;closePanel();try{sessionStorage.setItem('aio_pos','1')}catch(x){}route();return true};
   var _ar=adminRedirect;adminRedirect=function(){if(isStaff&&!isAdmin)return posOpen();return _ar()};
   var _aa=autoAdmin;autoAdmin=function(){if(isStaff&&!isAdmin){var seen=false;try{seen=!!sessionStorage.getItem('aio_pos')}catch(x){}if(!seen)posOpen();return}_aa()};
   var _route=route;route=function(){
