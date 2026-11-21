@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="All In One Store: phones, laptops, appliances, clothes and household items delivered across Kenya.">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
 <script src="config.js"></script>
 <title>All In One Store</title>
 <link rel="manifest" href="manifest.webmanifest">
@@ -1460,13 +1460,12 @@ if(SBON){
   saveAddr=function(){if(!prof)return;var c=$('#ad-county').value,a=$('#ad-address').value.trim();
     sb.from('profiles').update({county:c,address:a}).eq('id',prof.id).then(function(r){if(r.error)return toast('Could not save. Try again.');prof.county=c;prof.address=a;fillFromAccount(prof);toast('Delivery details saved')})};
   finishOrder=function(){
-    var F=ui.form,items=cartItems(),fe=fee(),sub=subtotal();
-    var o={id:'AIO-'+(10000+Math.floor(Math.random()*89999)),user_id:sess,contact_name:F.name,contact_phone:F.phone,
-      items:items.map(function(i){return {id:i.p.id,q:i.q,name:i.p.name,price:i.p.price}}),fee:fe,county:F.county,address:F.address,
-      pay:F.pay==='mpesa'?'M-Pesa (demo)':'Pay on delivery',total:sub+fe,stage:0,times:{0:new Date().toISOString()}};
-    sb.from('orders').insert(o).then(function(r){
+    var F=ui.form,pay=F.pay==='mpesa'?'M-Pesa (demo)':'Pay on delivery';
+    sb.rpc('place_customer_order',{p_items:cartItems().map(function(i){return {id:i.p.id,q:i.q}}),p_county:F.county,p_address:F.address,p_contact_name:F.name,p_contact_phone:F.phone,p_pay:pay}).then(function(r){
       if(r.error){ui.paying=false;ui.step='pay';drawPanel();toast('Could not place the order. Try again.');return}
-      cart={};persist();ui.last={id:o.id,total:o.total,pay:o.pay};ui.step='done';ui.sel=o.id;badges();
+      var o=r.data;
+      if(!o||!o.id||!Number.isFinite(+o.total)||!o.pay){ui.paying=false;ui.step='pay';drawPanel();toast('Could not place the order. Try again.');return}
+      cart={};persist();ui.last={id:o.id,total:+o.total,pay:o.pay};ui.step='done';ui.sel=o.id;badges();
       return loadMyOrders().then(function(){drawPanel()});
     });
   };

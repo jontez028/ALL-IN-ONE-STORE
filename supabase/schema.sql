@@ -67,27 +67,167 @@ alter table public.products enable row level security;
 alter table public.orders enable row level security;
 
 -- profiles: you read and edit your own delivery details; nobody can make themselves admin
+drop policy if exists "read own profile" on public.profiles;
 create policy "read own profile" on public.profiles for select using (id = auth.uid() or public.is_admin());
+drop policy if exists "update own profile" on public.profiles;
 create policy "update own profile" on public.profiles for update using (id = auth.uid()) with check (id = auth.uid());
 revoke insert, update, delete on public.profiles from anon, authenticated;
 grant update (name, phone, email, county, address) on public.profiles to authenticated;
 
 -- products: everyone sees live products, only the admin sees hidden ones and changes anything
+drop policy if exists "read live products" on public.products;
 create policy "read live products" on public.products for select using (not hidden or public.is_admin());
+drop policy if exists "admin adds products" on public.products;
 create policy "admin adds products" on public.products for insert with check (public.is_admin());
+drop policy if exists "admin edits products" on public.products;
 create policy "admin edits products" on public.products for update using (public.is_admin()) with check (public.is_admin());
+drop policy if exists "admin removes products" on public.products;
 create policy "admin removes products" on public.products for delete using (public.is_admin());
 
 -- orders: customers place and read their own, the admin reads all and updates the status
+drop policy if exists "read own orders" on public.orders;
 create policy "read own orders" on public.orders for select using (user_id = auth.uid() or public.is_admin());
-create policy "place own order" on public.orders for insert with check (user_id = auth.uid() and stage = 0);
+drop policy if exists "place own order" on public.orders;
+drop policy if exists "admin updates orders" on public.orders;
 create policy "admin updates orders" on public.orders for update using (public.is_admin()) with check (public.is_admin());
-revoke delete on public.orders from anon, authenticated;
+revoke insert, delete on public.orders from public, anon, authenticated;
+
+create or replace function public.place_customer_order(
+  p_items jsonb,
+  p_county text,
+  p_address text,
+  p_contact_name text,
+  p_contact_phone text,
+  p_pay text
+) returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public, pg_temp
+as $$
+declare
+  v_user_id uuid := auth.uid();
+  v_item jsonb;
+  v_product_id integer;
+  v_quantity integer;
+  v_product record;
+  v_order_items jsonb := '[]'::jsonb;
+  v_seen_ids integer[] := array[]::integer[];
+  v_subtotal bigint := 0;
+  v_fee integer;
+  v_total bigint;
+  v_order_id text;
+  v_item_count integer;
+begin
+  if v_user_id is null then
+    raise exception 'Sign in before placing an order.';
+  end if;
+  if p_items is null or jsonb_typeof(p_items) <> 'array' then
+    raise exception 'Order items must be a list.';
+  end if;
+  v_item_count := jsonb_array_length(p_items);
+  if v_item_count < 1 or v_item_count > 50 then
+    raise exception 'An order must contain between 1 and 50 products.';
+  end if;
+  if p_county is null or p_county not in ('Nairobi', 'Kiambu', 'Nakuru', 'Mombasa', 'Kisumu', 'Tharaka-Nithi', 'Other county') then
+    raise exception 'Choose a valid delivery county.';
+  end if;
+  if p_address is null or length(btrim(p_address)) < 5 or length(p_address) > 500 then
+    raise exception 'Enter a valid delivery address.';
+  end if;
+  if p_contact_name is null or length(btrim(p_contact_name)) < 2 or length(p_contact_name) > 120 then
+    raise exception 'Enter a valid contact name.';
+  end if;
+  if p_contact_phone is null or length(btrim(p_contact_phone)) < 7 or length(p_contact_phone) > 20 then
+    raise exception 'Enter a valid contact phone number.';
+  end if;
+  if p_pay is null or p_pay not in ('M-Pesa (demo)', 'Pay on delivery') then
+    raise exception 'Choose a valid payment method.';
+  end if;
+
+  for v_item in select value from jsonb_array_elements(p_items) as items(value)
+  loop
+    if jsonb_typeof(v_item) <> 'object'
+       or coalesce(v_item->>'id', '') !~ '^[1-9][0-9]*$'
+       or coalesce(v_item->>'q', '') !~ '^[1-9][0-9]*$' then
+      raise exception 'Each order item must have a valid product and quantity.';
+    end if;
+    if (v_item->>'id')::numeric > 2147483647 or (v_item->>'q')::numeric > 2147483647 then
+      raise exception 'A product or quantity is out of range.';
+    end if;
+    v_product_id := (v_item->>'id')::integer;
+    if v_product_id = any(v_seen_ids) then
+      raise exception 'A product may only appear once in the order.';
+    end if;
+    v_seen_ids := array_append(v_seen_ids, v_product_id);
+  end loop;
+
+  for v_item in
+    select value
+    from jsonb_array_elements(p_items) as items(value)
+    order by (value->>'id')::integer
+  loop
+    v_product_id := (v_item->>'id')::integer;
+    v_quantity := (v_item->>'q')::integer;
+    select name, price, stock, hidden
+      into v_product
+      from public.products
+      where id = v_product_id
+      for update;
+    if not found or v_product.hidden then
+      raise exception 'A product in this order is unavailable.';
+    end if;
+    if v_quantity > v_product.stock then
+      raise exception 'There is not enough stock for a product in this order.';
+    end if;
+    v_subtotal := v_subtotal + v_product.price::bigint * v_quantity::bigint;
+    v_order_items := v_order_items || jsonb_build_array(jsonb_build_object(
+      'id', v_product_id,
+      'q', v_quantity,
+      'name', v_product.name,
+      'price', v_product.price
+    ));
+  end loop;
+
+  v_fee := case
+    when v_subtotal >= 15000 then 0
+    else case p_county
+      when 'Nairobi' then 250
+      when 'Kiambu' then 300
+      when 'Nakuru' then 350
+      when 'Mombasa' then 450
+      when 'Kisumu' then 450
+      when 'Tharaka-Nithi' then 400
+      else 500
+    end
+  end;
+  v_total := v_subtotal + v_fee;
+  if v_total > 2147483647 then
+    raise exception 'The order total is out of range.';
+  end if;
+
+  v_order_id := 'AIO-' || upper(gen_random_uuid()::text);
+  insert into public.orders (
+    id, user_id, contact_name, contact_phone, items, fee, county, address, pay, total, stage, times
+  ) values (
+    v_order_id, v_user_id, btrim(p_contact_name), btrim(p_contact_phone),
+    v_order_items, v_fee, p_county, btrim(p_address), p_pay, v_total, 0,
+    jsonb_build_object('0', now())
+  );
+
+  return jsonb_build_object('id', v_order_id, 'total', v_total, 'pay', p_pay);
+end;
+$$;
+
+revoke all on function public.place_customer_order(jsonb, text, text, text, text, text) from public, anon, authenticated;
+grant execute on function public.place_customer_order(jsonb, text, text, text, text, text) to authenticated;
 
 -- product photos
 insert into storage.buckets (id, name, public) values ('products', 'products', true) on conflict (id) do nothing;
+drop policy if exists "admin adds product photos" on storage.objects;
 create policy "admin adds product photos" on storage.objects for insert to authenticated with check (bucket_id = 'products' and public.is_admin());
+drop policy if exists "admin edits product photos" on storage.objects;
 create policy "admin edits product photos" on storage.objects for update to authenticated using (bucket_id = 'products' and public.is_admin());
+drop policy if exists "admin removes product photos" on storage.objects;
 create policy "admin removes product photos" on storage.objects for delete to authenticated using (bucket_id = 'products' and public.is_admin());
 
 -- starter products
